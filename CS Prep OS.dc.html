@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin:0; padding:0; background:#0b0d10; }
+  body { font-family:'IBM Plex Sans', system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  * { box-sizing:border-box; }
+  a { color:#57d3c4; text-decoration:none; }
+  a:hover { color:#7ee4d7; text-decoration:underline; }
+  input, textarea, select, button { font-family:inherit; }
+  input:focus, textarea:focus, select:focus { outline:1px solid #57d3c4; }
+  ::-webkit-scrollbar { width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb { background:#23282f; border-radius:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+</style>
+</helmet>
+<div style="display:flex; min-height:100vh; background:#0b0d10; color:#e6e9ee; font-size:14px; line-height:1.5;">
+
+  <aside style="width:236px; flex:0 0 236px; border-right:1px solid #23282f; background:#0e1114; display:flex; flex-direction:column; position:sticky; top:0; height:100vh;">
+    <div style="padding:18px 18px 14px; border-bottom:1px solid #23282f;">
+      <div style="display:flex; align-items:center; gap:9px;">
+        <div style="width:22px; height:22px; border-radius:6px; background:#57d3c4;"></div>
+        <div style="font-weight:700; letter-spacing:-0.01em; font-size:15px;">CS Prep OS</div>
+      </div>
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:#5e6672; margin-top:7px; letter-spacing:0.04em; text-transform:uppercase;">22-week job-ready plan</div>
+    </div>
+
+    <nav style="display:flex; flex-direction:column; gap:2px; padding:12px 10px; overflow-y:auto; flex:1;">
+      <sc-for list="{{ nav }}" as="item" hint-placeholder-count="11">
+        <div onClick="{{ item.go }}" style="{{ item.css }}" style-hover="background:#171b20; color:#e6e9ee;">
+          <span>{{ item.label }}</span>
+          <span style="{{ item.badgeCss }}">{{ item.badge }}</span>
+        </div>
+      </sc-for>
+    </nav>
+
+    <div style="padding:12px 14px 14px; border-top:1px solid #23282f; display:flex; flex-direction:column; gap:9px;">
+      <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; color:#5e6672; letter-spacing:0.06em; text-transform:uppercase;">Position</div>
+      <div style="display:flex; gap:8px;">
+        <label style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <span style="font-size:10.5px; color:#8b939e;">Week</span>
+          <select value="{{ week }}" onChange="{{ setWeek }}" style="background:#171b20; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:5px 6px; font-size:12.5px;">
+            <sc-for list="{{ weekOptions }}" as="w" hint-placeholder-count="4">
+              <option value="{{ w.v }}">{{ w.label }}</option>
+            </sc-for>
+          </select>
+        </label>
+        <label style="flex:1; display:flex; flex-direction:column; gap:4px;">
+          <span style="font-size:10.5px; color:#8b939e;">Day</span>
+          <select value="{{ day }}" onChange="{{ setDay }}" style="background:#171b20; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:5px 6px; font-size:12.5px;">
+            <sc-for list="{{ dayOptions }}" as="d" hint-placeholder-count="7">
+              <option value="{{ d.v }}">{{ d.label }}</option>
+            </sc-for>
+          </select>
+        </label>
+      </div>
+      <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:#5e6672; padding-top:2px;">
+        <span>{{ phaseShort }}</span>
+        <span>{{ overallPctLabel }} complete</span>
+      </div>
+    </div>
+  </aside>
+
+  <main style="flex:1; min-width:0; display:flex; flex-direction:column;">
+    <header style="border-bottom:1px solid #23282f; padding:20px 30px; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; background:#0e1114; position:sticky; top:0; z-index:5;">
+      <div>
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:#57d3c4;">{{ phaseLabel }}</div>
+        <h1 style="margin:6px 0 0; font-size:21px; font-weight:600; letter-spacing:-0.015em;">{{ viewTitle }}</h1>
+        <div style="margin-top:4px; font-size:12.5px; color:#8b939e;">{{ viewSub }}</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <sc-for list="{{ headerStats }}" as="s" hint-placeholder-count="3">
+          <div style="border:1px solid #23282f; background:#121519; border-radius:9px; padding:9px 14px; min-width:104px;">
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:0.07em; text-transform:uppercase; color:#5e6672;">{{ s.label }}</div>
+            <div style="font-size:17px; font-weight:600; margin-top:3px; letter-spacing:-0.01em;">{{ s.value }}</div>
+            <div style="font-size:10.5px; color:#8b939e;">{{ s.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </header>
+
+    <div style="padding:26px 30px 60px; flex:1;">
+
+      <!-- ============ TODAY ============ -->
+      <sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:20px; align-items:start;">
+
+          <div style="display:flex; flex-direction:column; gap:20px; min-width:0;">
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
+              <div style="padding:16px 18px; border-bottom:1px solid #23282f; display:flex; align-items:center; justify-content:space-between;">
+                <div>
+                  <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#57d3c4;">Today</div>
+                  <div style="font-size:15px; font-weight:600; margin-top:3px;">{{ todayHeading }}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:'IBM Plex Mono', monospace; font-size:16px; font-weight:600;">{{ todayTotalLabel }}</div>
+                  <div style="font-size:11px; color:#8b939e;">{{ todayDoneLabel }}</div>
+                </div>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <sc-for list="{{ todayTasks }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex; gap:13px; padding:15px 18px; border-bottom:1px solid #1a1e23;">
+                    <div onClick="{{ t.toggle }}" style="{{ t.boxCss }}">{{ t.boxMark }}</div>
+                    <div style="flex:1; min-width:0;">
+                      <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+                        <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:#57d3c4;">{{ t.topic }}</span>
+                        <span style="{{ t.prioCss }}">{{ t.priority }}</span>
+                        <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5e6672;">{{ t.minLabel }}</span>
+                      </div>
+                      <div style="{{ t.titleCss }}">{{ t.task }}</div>
+                      <div style="display:flex; gap:8px; margin-top:9px; flex-wrap:wrap;">
+                        <input value="{{ t.notes }}" data-k="{{ t.key }}" onChange="{{ setTaskNote }}" placeholder="notes" style="flex:1; min-width:150px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:6px 9px; font-size:12px;" />
+                        <input value="{{ t.link }}" data-k="{{ t.key }}" onChange="{{ setTaskLink }}" placeholder="resource link" style="flex:1; min-width:150px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:6px 9px; font-size:12px;" />
+                        <input value="{{ t.actual }}" data-k="{{ t.key }}" onChange="{{ setTaskActual }}" placeholder="actual min" style="width:92px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:6px 9px; font-size:12px; font-family:'IBM Plex Mono', monospace;" />
+                      </div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="padding:13px 18px; display:flex; justify-content:space-between; font-size:12px; color:#8b939e; background:#0e1114;">
+                <span>Planned {{ plannedLabel }} · Completed {{ completedLabel }}</span>
+                <span style="font-family:'IBM Plex Mono', monospace; color:#e6e9ee;">{{ dayPctLabel }}</span>
+              </div>
+            </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">Next up — {{ tomorrowHeading }}</div>
+                <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#5e6672;">{{ tomorrowTotalLabel }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:7px;">
+                <sc-for list="{{ tomorrowTasks }}" as="t" hint-placeholder-count="3">
+                  <div style="display:flex; align-items:center; gap:10px; font-size:12.5px; color:#8b939e;">
+                    <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#57d3c4; width:78px; flex:0 0 78px; text-transform:uppercase; letter-spacing:0.04em;">{{ t.topic }}</span>
+                    <span style="flex:1; min-width:0;">{{ t.task }}</span>
+                    <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5e6672;">{{ t.minLabel }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:20px; min-width:0;">
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">This week</div>
+              <div style="margin-top:13px; display:flex; align-items:flex-end; gap:8px;">
+                <div style="font-size:29px; font-weight:600; letter-spacing:-0.02em; font-family:'IBM Plex Mono', monospace;">{{ weekHoursLabel }}</div>
+                <div style="font-size:12px; color:#8b939e; padding-bottom:6px;">of {{ weekPlannedLabel }} planned · target 15–18h</div>
+              </div>
+              <div style="height:6px; border-radius:3px; background:#1c2127; margin-top:11px; overflow:hidden;">
+                <div style="width:{{ weekBarPct }}%; height:100%; background:#57d3c4;"></div>
+              </div>
+              <div style="display:flex; gap:5px; margin-top:14px;">
+                <sc-for list="{{ weekDots }}" as="d" hint-placeholder-count="7">
+                  <div style="flex:1; text-align:center;">
+                    <div style="{{ d.css }}"></div>
+                    <div style="font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:#5e6672; margin-top:5px;">{{ d.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="{{ paceCss }}">{{ paceMsg }}</div>
+            </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
+              <div style="padding:14px 18px; border-bottom:1px solid #23282f; display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#e2b25f;">Review today</div>
+                <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#5e6672;">{{ dueCountLabel }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column;">
+                <sc-for list="{{ dueRevision }}" as="r" hint-placeholder-count="3">
+                  <div style="padding:12px 18px; border-bottom:1px solid #1a1e23; display:flex; align-items:center; gap:10px;">
+                    <div style="flex:1; min-width:0;">
+                      <div style="font-size:13px; font-weight:500;">{{ r.concept }}</div>
+                      <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:#5e6672; margin-top:2px;">{{ r.stageLabel }}</div>
+                    </div>
+                    <div onClick="{{ r.ok }}" style="border:1px solid #2f4a3a; color:#7fca8a; background:#132018; border-radius:6px; padding:5px 9px; font-size:11.5px; cursor:pointer;" style-hover="background:#182a1e;">Remembered</div>
+                    <div onClick="{{ r.again }}" style="border:1px solid #4a3f2a; color:#e2b25f; background:#1e1a12; border-radius:6px; padding:5px 9px; font-size:11.5px; cursor:pointer;" style-hover="background:#272117;">Needs review</div>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ noRevision }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:16px 18px; font-size:12.5px; color:#5e6672;">Nothing due. Add concepts from the Revision page as you finish them.</div>
+                </sc-if>
+              </div>
+            </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">Week {{ week }} deliverables</div>
+              <div style="display:flex; flex-direction:column; gap:9px; margin-top:12px;">
+                <sc-for list="{{ weekDeliverables }}" as="d" hint-placeholder-count="2">
+                  <div onClick="{{ d.toggle }}" style="display:flex; gap:10px; cursor:pointer; align-items:flex-start;">
+                    <div style="{{ d.boxCss }}">{{ d.boxMark }}</div>
+                    <div style="{{ d.textCss }}">{{ d.text }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ ROADMAP ============ -->
+      <sc-if value="{{ isRoadmap }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:26px;">
+          <sc-for list="{{ phases }}" as="p" hint-placeholder-count="5">
+            <section>
+              <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
+                <div style="font-size:16px; font-weight:600; letter-spacing:-0.01em;">{{ p.title }}</div>
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5e6672;">{{ p.range }}</div>
+                <div style="flex:1; height:1px; background:#23282f;"></div>
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#8b939e;">{{ p.pctLabel }}</div>
+              </div>
+              <div style="font-size:12.5px; color:#8b939e; margin-bottom:14px; max-width:900px;">{{ p.note }}</div>
+
+              <sc-if value="{{ p.isTrackPhase }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1px solid #4a3f2a; background:#16130d; border-radius:10px; padding:14px 16px; margin-bottom:14px;">
+                  <div style="font-size:13px; color:#e2b25f; font-weight:600;">Choose ONE secondary track</div>
+                  <div style="font-size:12.5px; color:#8b939e; margin-top:4px;">Each option is ~4 weeks and reuses Phase 1–3 skills. Avoid running two in parallel.</div>
+                  <div style="display:flex; gap:9px; margin-top:12px; flex-wrap:wrap;">
+                    <sc-for list="{{ trackOptions }}" as="o" hint-placeholder-count="4">
+                      <div onClick="{{ o.pick }}" style="{{ o.css }}">
+                        <div style="font-size:12.5px; font-weight:600;">{{ o.name }}</div>
+                        <div style="font-size:11.5px; color:#8b939e; margin-top:3px; max-width:230px;">{{ o.blurb }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="font-size:11.5px; color:#5e6672; margin-top:11px;">Curriculum recommendation: Full-Stack for reach, Cybersecurity for tightest synergy with your Linux/networking strength.</div>
+                </div>
+              </sc-if>
+
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ p.weeks }}" as="w" hint-placeholder-count="5">
+                  <div style="{{ w.cardCss }}">
+                    <div onClick="{{ w.open }}" style="display:flex; align-items:center; gap:14px; padding:13px 16px; cursor:pointer;">
+                      <div style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5e6672; width:56px; flex:0 0 56px;">{{ w.num }}</div>
+                      <div style="flex:1; min-width:0;">
+                        <div style="font-size:13.5px; font-weight:600;">{{ w.title }}</div>
+                        <div style="font-size:12px; color:#8b939e; margin-top:2px;">{{ w.topicsLine }}</div>
+                      </div>
+                      <div style="width:96px; flex:0 0 96px;">
+                        <div style="height:5px; border-radius:3px; background:#1c2127; overflow:hidden;">
+                          <div style="width:{{ w.pct }}%; height:100%; background:#57d3c4;"></div>
+                        </div>
+                        <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; color:#5e6672; margin-top:5px; text-align:right;">{{ w.pctLabel }}</div>
+                      </div>
+                      <div onClick="{{ w.jump }}" style="border:1px solid #23282f; border-radius:6px; padding:4px 9px; font-size:11px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Go to week</div>
+                    </div>
+                    <sc-if value="{{ w.expanded }}" hint-placeholder-val="{{ false }}">
+                      <div style="padding:4px 16px 16px 86px; display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:18px;">
+                        <div>
+                          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:#5e6672; margin-bottom:7px;">Goal</div>
+                          <div style="font-size:12.5px; color:#c3c9d1;">{{ w.goal }}</div>
+                          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:#5e6672; margin:14px 0 7px;">Practice</div>
+                          <div style="font-size:12.5px; color:#c3c9d1;">{{ w.practice }}</div>
+                        </div>
+                        <div>
+                          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:#5e6672; margin-bottom:7px;">Topics</div>
+                          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                            <sc-for list="{{ w.topics }}" as="tp" hint-placeholder-count="4">
+                              <span style="border:1px solid #23282f; background:#0e1114; border-radius:20px; padding:3px 9px; font-size:11.5px; color:#c3c9d1;">{{ tp }}</span>
+                            </sc-for>
+                          </div>
+                        </div>
+                        <div>
+                          <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:#5e6672; margin-bottom:7px;">Deliverables</div>
+                          <div style="display:flex; flex-direction:column; gap:8px;">
+                            <sc-for list="{{ w.items }}" as="it" hint-placeholder-count="2">
+                              <div onClick="{{ it.toggle }}" style="display:flex; gap:9px; cursor:pointer; align-items:flex-start;">
+                                <div style="{{ it.boxCss }}">{{ it.boxMark }}</div>
+                                <div style="{{ it.textCss }}">{{ it.text }}</div>
+                              </div>
+                            </sc-for>
+                          </div>
+                        </div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </sc-for>
+
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:18px 20px;">
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:14px;">Curriculum rules</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:9px 24px;">
+              <sc-for list="{{ rules }}" as="r" hint-placeholder-count="12">
+                <div style="display:flex; gap:10px; font-size:12.5px; color:#c3c9d1;">
+                  <span style="font-family:'IBM Plex Mono', monospace; color:#5e6672; flex:0 0 20px;">{{ r.n }}</span>
+                  <span>{{ r.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ============ PLANNER ============ -->
+      <sc-if value="{{ isPlanner }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:flex; align-items:center; gap:14px; font-size:12.5px; color:#8b939e;">
+            <span>Week {{ week }} · {{ weekTitle }}</span>
+            <span style="font-family:'IBM Plex Mono', monospace; color:#5e6672;">Planned {{ weekPlannedLabel }} · Logged {{ weekHoursLabel }}</span>
+          </div>
+          <sc-for list="{{ plannerDays }}" as="d" hint-placeholder-count="7">
+            <section style="{{ d.cardCss }}">
+              <div style="display:flex; align-items:center; justify-content:space-between; padding:13px 18px; border-bottom:1px solid #1a1e23;">
+                <div style="display:flex; align-items:center; gap:11px;">
+                  <div style="font-size:14px; font-weight:600;">{{ d.name }}</div>
+                  <div style="{{ d.tagCss }}">{{ d.tag }}</div>
+                </div>
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#8b939e;">Planned {{ d.planned }} · Completed {{ d.completed }} · {{ d.pctLabel }}</div>
+              </div>
+              <div>
+                <sc-for list="{{ d.tasks }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex; gap:12px; align-items:center; padding:10px 18px; border-bottom:1px solid #151920;">
+                    <div onClick="{{ t.toggle }}" style="{{ t.boxCss }}">{{ t.boxMark }}</div>
+                    <span style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.05em; text-transform:uppercase; color:#57d3c4; width:88px; flex:0 0 88px;">{{ t.topic }}</span>
+                    <span style="{{ t.titleCss }}">{{ t.task }}</span>
+                    <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5e6672; width:56px; flex:0 0 56px; text-align:right;">{{ t.minLabel }}</span>
+                    <input value="{{ t.actual }}" data-k="{{ t.key }}" onChange="{{ setTaskActual }}" placeholder="actual" style="width:74px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:5px 8px; font-size:11.5px; font-family:'IBM Plex Mono', monospace;" />
+                    <input value="{{ t.notes }}" data-k="{{ t.key }}" onChange="{{ setTaskNote }}" placeholder="notes" style="width:180px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:5px 8px; font-size:11.5px;" />
+                  </div>
+                </sc-for>
+              </div>
+              <div style="padding:11px 18px;">
+                <input value="{{ d.reflection }}" data-k="{{ d.rkey }}" onChange="{{ setReflection }}" placeholder="End-of-day reflection" style="width:100%; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12px;" />
+              </div>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ DSA ============ -->
+      <sc-if value="{{ isDsa }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+            <sc-for list="{{ dsaStats }}" as="s" hint-placeholder-count="5">
+              <div style="border:1px solid #23282f; background:#121519; border-radius:10px; padding:13px 15px;">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:#5e6672;">{{ s.label }}</div>
+                <div style="font-size:21px; font-weight:600; margin-top:4px; font-family:'IBM Plex Mono', monospace;">{{ s.value }}</div>
+                <div style="font-size:11px; color:#8b939e;">{{ s.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="{{ hardNoteCss }}">{{ hardNote }}</div>
+
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:13px;">Log a problem</div>
+            <div style="display:flex; flex-wrap:wrap; gap:9px; align-items:center;">
+              <input value="{{ f.title }}" data-f="title" onChange="{{ setDsaField }}" placeholder="Problem title" style="flex:2; min-width:190px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <select value="{{ f.topic }}" data-f="topic" onChange="{{ setDsaField }}" style="flex:1; min-width:140px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;">
+                <sc-for list="{{ dsaTopics }}" as="t" hint-placeholder-count="17">
+                  <option value="{{ t }}">{{ t }}</option>
+                </sc-for>
+              </select>
+              <select value="{{ f.difficulty }}" data-f="difficulty" onChange="{{ setDsaField }}" style="width:110px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;">
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+              <input value="{{ f.minutes }}" data-f="minutes" onChange="{{ setDsaField }}" placeholder="min" style="width:70px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px; font-family:'IBM Plex Mono', monospace;" />
+              <div onClick="{{ toggleIndependent }}" style="{{ indCss }}">Solved independently</div>
+              <div onClick="{{ toggleHints }}" style="{{ hintCss }}">Needed hints</div>
+              <input value="{{ f.mistake }}" data-f="mistake" onChange="{{ setDsaField }}" placeholder="Mistake / reason" style="flex:2; min-width:190px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <div onClick="{{ addDsa }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">Add</div>
+            </div>
+          </section>
+
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:20px; align-items:start;">
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
+              <div style="display:flex; padding:10px 16px; border-bottom:1px solid #23282f; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#5e6672;">
+                <span style="flex:1;">Problem</span>
+                <span style="width:120px;">Topic</span>
+                <span style="width:70px;">Level</span>
+                <span style="width:60px;">Time</span>
+                <span style="width:80px;">Solved</span>
+                <span style="width:92px;">Revisit</span>
+              </div>
+              <sc-for list="{{ dsaLog }}" as="p" hint-placeholder-count="4">
+                <div style="display:flex; align-items:center; padding:11px 16px; border-bottom:1px solid #1a1e23; font-size:12.5px;">
+                  <span style="flex:1; min-width:0;">
+                    <div style="font-weight:500;">{{ p.title }}</div>
+                    <div style="font-size:11px; color:#5e6672;">{{ p.sub }}</div>
+                  </span>
+                  <span style="width:120px; color:#8b939e; font-size:11.5px;">{{ p.topic }}</span>
+                  <span style="width:70px;"><span style="{{ p.diffCss }}">{{ p.difficulty }}</span></span>
+                  <span style="width:60px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#8b939e;">{{ p.minutes }}m</span>
+                  <span style="width:80px; font-size:11.5px; color:{{ p.solvedColor }};">{{ p.solvedLabel }}</span>
+                  <span style="width:92px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#8b939e;">{{ p.revisit }}</span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noDsa }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:18px; font-size:12.5px; color:#5e6672;">No problems logged yet. The curriculum asks for 3–4/day in Phases 1–2.</div>
+              </sc-if>
+            </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:13px;">Coverage by pattern</div>
+              <div style="display:flex; flex-direction:column; gap:9px;">
+                <sc-for list="{{ dsaCoverage }}" as="c" hint-placeholder-count="17">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#c3c9d1;">
+                      <span>{{ c.topic }}</span>
+                      <span style="font-family:'IBM Plex Mono', monospace; color:#5e6672;">{{ c.count }}</span>
+                    </div>
+                    <div style="height:4px; border-radius:2px; background:#1c2127; margin-top:4px; overflow:hidden;">
+                      <div style="width:{{ c.pct }}%; height:100%; background:{{ c.color }};"></div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ SKILLS ============ -->
+      <sc-if value="{{ isSkills }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:24px;">
+          <sc-for list="{{ skillGroups }}" as="g" hint-placeholder-count="2">
+            <section>
+              <div style="display:flex; align-items:baseline; gap:12px; margin-bottom:12px;">
+                <div style="font-size:15px; font-weight:600;">{{ g.title }}</div>
+                <div style="font-size:12.5px; color:#8b939e;">{{ g.note }}</div>
+              </div>
+              <div style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
+                <div style="display:flex; padding:10px 16px; border-bottom:1px solid #23282f; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#5e6672;">
+                  <span style="width:150px;">Skill</span>
+                  <span style="width:130px;">Status</span>
+                  <span style="width:150px;">Progress</span>
+                  <span style="width:120px;">Confidence</span>
+                  <span style="width:110px;">Last studied</span>
+                  <span style="flex:1;">Next action</span>
+                </div>
+                <sc-for list="{{ g.skills }}" as="s" hint-placeholder-count="5">
+                  <div style="display:flex; align-items:center; padding:11px 16px; border-bottom:1px solid #1a1e23;">
+                    <span style="width:150px; font-size:13px; font-weight:500;">{{ s.name }}</span>
+                    <span style="width:130px;">
+                      <select value="{{ s.status }}" data-k="{{ s.name }}" onChange="{{ setSkillStatus }}" style="{{ s.statusCss }}">
+                        <sc-for list="{{ statuses }}" as="st" hint-placeholder-count="5">
+                          <option value="{{ st }}">{{ st }}</option>
+                        </sc-for>
+                      </select>
+                    </span>
+                    <span style="width:150px; display:flex; align-items:center; gap:8px;">
+                      <input type="range" min="0" max="100" step="5" value="{{ s.progress }}" data-k="{{ s.name }}" onChange="{{ setSkillProgress }}" style="width:92px; accent-color:#57d3c4;" />
+                      <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#8b939e;">{{ s.progress }}%</span>
+                    </span>
+                    <span style="width:120px; display:flex; gap:4px;">
+                      <sc-for list="{{ s.conf }}" as="c" hint-placeholder-count="5">
+                        <div onClick="{{ c.set }}" style="{{ c.css }}"></div>
+                      </sc-for>
+                    </span>
+                    <span style="width:110px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#8b939e;">{{ s.last }}</span>
+                    <span style="flex:1; min-width:0;">
+                      <input value="{{ s.next }}" data-k="{{ s.name }}" onChange="{{ setSkillNext }}" placeholder="next action" style="width:100%; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:6px 9px; font-size:12px;" />
+                    </span>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ PROJECTS ============ -->
+      <sc-if value="{{ isProjects }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:18px 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+              <div style="min-width:260px;">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#57d3c4;">Primary project</div>
+                <div style="font-size:18px; font-weight:600; margin-top:5px;">{{ proj.name }}</div>
+                <div style="font-size:12.5px; color:#8b939e; margin-top:5px; max-width:520px;">{{ proj.desc }}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600;">{{ proj.pctLabel }}</div>
+                <div style="font-size:11.5px; color:#8b939e;">{{ proj.stageLabel }}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:22px; display:flex; align-items:flex-start; overflow-x:auto; padding-bottom:6px;">
+              <sc-for list="{{ pipeline }}" as="st" hint-placeholder-count="11">
+                <div style="display:flex; align-items:flex-start; flex:1; min-width:96px;">
+                  <div onClick="{{ st.toggle }}" style="display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; width:100%;">
+                    <div style="display:flex; align-items:center; width:100%;">
+                      <div style="{{ st.lineLeftCss }}"></div>
+                      <div style="{{ st.dotCss }}"></div>
+                      <div style="{{ st.lineRightCss }}"></div>
+                    </div>
+                    <div style="{{ st.labelCss }}">{{ st.name }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:18px;">
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:13px;">Links & docs</div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ projFields }}" as="fd" hint-placeholder-count="4">
+                  <label style="display:flex; flex-direction:column; gap:4px;">
+                    <span style="font-size:11px; color:#8b939e;">{{ fd.label }}</span>
+                    <input value="{{ fd.value }}" data-f="{{ fd.key }}" onChange="{{ setProjField }}" placeholder="{{ fd.ph }}" style="background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
+                  </label>
+                </sc-for>
+              </div>
+              <div style="display:flex; gap:9px; margin-top:14px; flex-wrap:wrap;">
+                <sc-for list="{{ docFlags }}" as="d" hint-placeholder-count="3">
+                  <div onClick="{{ d.toggle }}" style="{{ d.css }}">{{ d.label }}</div>
+                </sc-for>
+              </div>
+              <div style="{{ docNudgeCss }}">{{ docNudge }}</div>
+            </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:13px;">Resume bullets</div>
+              <textarea value="{{ proj.bullets }}" onChange="{{ setProjBullets }}" placeholder="One bullet per line — write these as you build, not at the end." style="width:100%; min-height:132px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:8px; padding:10px 12px; font-size:12.5px; resize:vertical;"></textarea>
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin:16px 0 10px;">Portfolio stage</div>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <sc-for list="{{ portfolioStages }}" as="s" hint-placeholder-count="6">
+                  <div onClick="{{ s.pick }}" style="{{ s.css }}">{{ s.name }}</div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:13px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">Project tasks</div>
+              <div style="display:flex; gap:8px;">
+                <input value="{{ f.projTask }}" data-f="projTask" onChange="{{ setDsaField }}" placeholder="Add a task" style="width:260px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
+                <div onClick="{{ addProjTask }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Add</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <sc-for list="{{ projTasks }}" as="t" hint-placeholder-count="3">
+                <div style="display:flex; gap:10px; align-items:center;">
+                  <div onClick="{{ t.toggle }}" style="{{ t.boxCss }}">{{ t.boxMark }}</div>
+                  <div style="{{ t.textCss }}">{{ t.text }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ============ WEEKLY REVIEW ============ -->
+      <sc-if value="{{ isReview }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px;">
+            <sc-for list="{{ reviewStats }}" as="s" hint-placeholder-count="5">
+              <div style="border:1px solid #23282f; background:#121519; border-radius:10px; padding:13px 15px;">
+                <div style="font-family:'IBM Plex Mono', monospace; font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:#5e6672;">{{ s.label }}</div>
+                <div style="font-size:20px; font-weight:600; margin-top:4px; font-family:'IBM Plex Mono', monospace; color:{{ s.color }};">{{ s.value }}</div>
+                <div style="font-size:11px; color:#8b939e;">{{ s.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="{{ behindCss }}">
+            <div style="font-size:13px; font-weight:600;">{{ behindTitle }}</div>
+            <div style="font-size:12.5px; color:#c3c9d1; margin-top:5px;">{{ behindAdvice }}</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+            <sc-for list="{{ reviewFields }}" as="fd" hint-placeholder-count="6">
+              <label style="display:flex; flex-direction:column; gap:6px;">
+                <span style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:#8b939e;">{{ fd.label }}</span>
+                <textarea value="{{ fd.value }}" data-f="{{ fd.key }}" onChange="{{ setReviewField }}" placeholder="{{ fd.ph }}" style="width:100%; min-height:88px; background:#121519; border:1px solid #23282f; color:#e6e9ee; border-radius:8px; padding:10px 12px; font-size:12.5px; resize:vertical;"></textarea>
+              </label>
+            </sc-for>
+          </div>
+
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:18px 20px;">
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:16px;">Trend — last 8 weeks</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:28px;">
+              <sc-for list="{{ charts }}" as="c" hint-placeholder-count="2">
+                <div>
+                  <div style="font-size:12.5px; color:#c3c9d1; margin-bottom:12px;">{{ c.title }}</div>
+                  <div style="display:flex; align-items:flex-end; gap:7px; height:98px;">
+                    <sc-for list="{{ c.bars }}" as="b" hint-placeholder-count="8">
+                      <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <div style="width:100%; height:{{ b.h }}px; background:{{ b.color }}; border-radius:3px 3px 0 0;"></div>
+                        <div style="font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:#5e6672;">{{ b.label }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ============ REVISION ============ -->
+      <sc-if value="{{ isRevision }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+            <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:12px;">Schedule a concept</div>
+            <div style="display:flex; gap:9px; flex-wrap:wrap;">
+              <input value="{{ f.concept }}" data-f="concept" onChange="{{ setDsaField }}" placeholder="Concept, e.g. Java Collections" style="flex:1; min-width:230px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <div onClick="{{ addRevision }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">Schedule 1 / 3 / 7 / 14 / 30</div>
+            </div>
+          </section>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+            <sc-for list="{{ revisionBuckets }}" as="b" hint-placeholder-count="3">
+              <section style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
+                <div style="padding:13px 16px; border-bottom:1px solid #23282f; display:flex; justify-content:space-between;">
+                  <span style="font-size:13px; font-weight:600; color:{{ b.color }};">{{ b.title }}</span>
+                  <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#5e6672;">{{ b.count }}</span>
+                </div>
+                <sc-for list="{{ b.items }}" as="r" hint-placeholder-count="2">
+                  <div style="padding:11px 16px; border-bottom:1px solid #1a1e23;">
+                    <div style="display:flex; justify-content:space-between; gap:8px;">
+                      <span style="font-size:12.5px;">{{ r.concept }}</span>
+                      <span style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:#5e6672;">{{ r.stageLabel }}</span>
+                    </div>
+                    <div style="display:flex; gap:7px; margin-top:8px;">
+                      <div onClick="{{ r.ok }}" style="border:1px solid #2f4a3a; color:#7fca8a; border-radius:5px; padding:3px 8px; font-size:11px; cursor:pointer;">Remembered</div>
+                      <div onClick="{{ r.again }}" style="border:1px solid #4a3f2a; color:#e2b25f; border-radius:5px; padding:3px 8px; font-size:11px; cursor:pointer;">Needs review</div>
+                      <div onClick="{{ r.push }}" style="border:1px solid #23282f; color:#8b939e; border-radius:5px; padding:3px 8px; font-size:11px; cursor:pointer;">+3 days</div>
+                      <div onClick="{{ r.drop }}" style="border:1px solid #23282f; color:#5e6672; border-radius:5px; padding:3px 8px; font-size:11px; cursor:pointer;">Done</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </section>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ INTERVIEW ============ -->
+      <sc-if value="{{ isInterview }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <div style="display:grid; grid-template-columns:280px minmax(0,1fr); gap:20px; align-items:start;">
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:18px 20px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">Readiness score</div>
+              <div style="font-size:44px; font-weight:600; font-family:'IBM Plex Mono', monospace; letter-spacing:-0.03em; margin-top:8px;">{{ readinessScore }}</div>
+              <div style="height:6px; border-radius:3px; background:#1c2127; overflow:hidden;">
+                <div style="width:{{ readinessScore }}%; height:100%; background:#57d3c4;"></div>
+              </div>
+              <div style="font-size:11.5px; color:#5e6672; margin-top:12px;">This is a dashboard metric — the average of your own self-ratings below. It is not an objective measure of job readiness.</div>
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:#e2b25f; margin:18px 0 9px;">Weakest areas</div>
+              <div style="display:flex; flex-direction:column; gap:7px;">
+                <sc-for list="{{ weakest }}" as="w" hint-placeholder-count="3">
+                  <div style="display:flex; justify-content:space-between; font-size:12.5px; color:#c3c9d1;">
+                    <span>{{ w.name }}</span>
+                    <span style="font-family:'IBM Plex Mono', monospace; color:#8b939e;">{{ w.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:18px 20px;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:14px;">Self-rating by area</div>
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:12px 24px;">
+                <sc-for list="{{ readinessAreas }}" as="a" hint-placeholder-count="12">
+                  <div style="display:flex; align-items:center; gap:11px;">
+                    <span style="width:104px; flex:0 0 104px; font-size:12.5px;">{{ a.name }}</span>
+                    <input type="range" min="0" max="100" step="5" value="{{ a.value }}" data-k="{{ a.name }}" onChange="{{ setReadiness }}" style="flex:1; accent-color:#57d3c4;" />
+                    <span style="width:34px; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#8b939e; text-align:right;">{{ a.value }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </div>
+
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:13px; gap:10px; flex-wrap:wrap;">
+              <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">Mock interviews</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <select value="{{ f.mockType }}" data-f="mockType" onChange="{{ setDsaField }}" style="background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;">
+                  <option value="DSA">DSA</option>
+                  <option value="System Design">System Design</option>
+                  <option value="LLD">LLD</option>
+                  <option value="Project deep-dive">Project deep-dive</option>
+                  <option value="HR">HR</option>
+                </select>
+                <input value="{{ f.mockScore }}" data-f="mockScore" onChange="{{ setDsaField }}" placeholder="score /10" style="width:96px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
+                <input value="{{ f.mockNotes }}" data-f="mockNotes" onChange="{{ setDsaField }}" placeholder="Questions / mistakes / action items" style="width:320px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
+                <div onClick="{{ addMock }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Log</div>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column;">
+              <sc-for list="{{ mocks }}" as="m" hint-placeholder-count="2">
+                <div style="display:flex; gap:14px; padding:10px 0; border-top:1px solid #1a1e23; font-size:12.5px;">
+                  <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#5e6672; width:92px;">{{ m.date }}</span>
+                  <span style="width:130px; color:#57d3c4;">{{ m.type }}</span>
+                  <span style="width:60px; font-family:'IBM Plex Mono', monospace;">{{ m.score }}</span>
+                  <span style="flex:1; color:#8b939e;">{{ m.notes }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <!-- ============ JOBS ============ -->
+      <sc-if value="{{ isJobs }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+            <div style="display:flex; gap:9px; flex-wrap:wrap; align-items:center;">
+              <input value="{{ f.company }}" data-f="company" onChange="{{ setDsaField }}" placeholder="Company" style="width:180px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <input value="{{ f.role }}" data-f="role" onChange="{{ setDsaField }}" placeholder="Role" style="width:190px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <input value="{{ f.location }}" data-f="location" onChange="{{ setDsaField }}" placeholder="Location" style="width:150px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <input value="{{ f.url }}" data-f="url" onChange="{{ setDsaField }}" placeholder="Job URL" style="flex:1; min-width:180px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <input value="{{ f.resume }}" data-f="resume" onChange="{{ setDsaField }}" placeholder="Resume version" style="width:150px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
+              <div onClick="{{ addJob }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">Save</div>
+            </div>
+            <div style="font-size:11.5px; color:#5e6672; margin-top:10px;">The curriculum says to start applying as soon as Phase 1 is solid — don't wait for Phase 5.</div>
+          </section>
+
+          <div style="display:grid; grid-template-columns:repeat(7, minmax(168px, 1fr)); gap:12px; overflow-x:auto; padding-bottom:8px;">
+            <sc-for list="{{ jobColumns }}" as="col" hint-placeholder-count="7">
+              <div style="min-width:168px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:0 2px 9px;">
+                  <span style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.07em; text-transform:uppercase; color:{{ col.color }};">{{ col.name }}</span>
+                  <span style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:#5e6672;">{{ col.count }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:9px; min-height:80px; border:1px dashed #1c2127; border-radius:10px; padding:9px;">
+                  <sc-for list="{{ col.jobs }}" as="j" hint-placeholder-count="1">
+                    <div style="border:1px solid #23282f; background:#121519; border-radius:8px; padding:10px 11px;">
+                      <div style="font-size:12.5px; font-weight:600;">{{ j.company }}</div>
+                      <div style="font-size:11.5px; color:#8b939e; margin-top:2px;">{{ j.role }}</div>
+                      <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; color:#5e6672; margin-top:5px;">{{ j.meta }}</div>
+                      <div style="display:flex; gap:5px; margin-top:9px; align-items:center;">
+                        <div onClick="{{ j.back }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#5e6672; cursor:pointer;">‹</div>
+                        <div onClick="{{ j.fwd }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#8b939e; cursor:pointer;">›</div>
+                        <div onClick="{{ j.reject }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#e2726a; cursor:pointer;">✕</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ CHECKLIST ============ -->
+      <sc-if value="{{ isChecklist }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:18px; align-items:start;">
+          <sc-for list="{{ checklistGroups }}" as="g" hint-placeholder-count="3">
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <span style="font-size:14px; font-weight:600;">{{ g.title }}</span>
+                <span style="font-family:'IBM Plex Mono', monospace; font-size:11px; color:#5e6672;">{{ g.countLabel }}</span>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="8">
+                  <div onClick="{{ it.toggle }}" style="display:flex; gap:10px; cursor:pointer; align-items:center;">
+                    <div style="{{ it.boxCss }}">{{ it.boxMark }}</div>
+                    <div style="{{ it.textCss }}">{{ it.text }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </section>
+          </sc-for>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const C = {
+  bg:'#0b0d10', panel:'#121519', panel2:'#171b20', border:'#23282f',
+  text:'#e6e9ee', soft:'#c3c9d1', muted:'#8b939e', dim:'#5e6672',
+  accent:'#57d3c4', amber:'#e2b25f', red:'#e2726a', green:'#7fca8a'
+};
+
+const DSA_TOPICS = ['Arrays','Strings','Hashing','Two Pointers','Sliding Window','Recursion','Linked Lists','Stacks','Queues','Trees','BST','Graphs','BFS','DFS','Heaps/Priority Queues','Dynamic Programming','Dijkstra','Union-Find'];
+
+const STATUSES = ['Not Started','Learning','Practicing','Project Applied','Interview Ready'];
+
+const PIPELINE = ['Java','Spring Boot','REST API','PostgreSQL/MySQL','JPA/Hibernate','Docker','GitHub Actions','Kubernetes','AWS','Terraform','Monitoring'];
+
+const PORTFOLIO_STAGES = ['Idea','Building','Working','Deployed','Documented','Resume Ready'];
+
+const RULES = [
+  'DSA stays a recurring daily activity — it does not disappear between DSA weeks.',
+  'Java is the primary language.',
+  'Python stays secondary.',
+  'Linux / AWS / Docker are existing strengths — no beginner-level re-study.',
+  'Phase 3 extends the existing cloud/DevOps foundation rather than restarting it.',
+  'Phase 5 requires choosing exactly ONE secondary track.',
+  'Do not add a second backend language (Go, C#) right now.',
+  'Do not add a second cloud provider (Azure, GCP) right now.',
+  'No advanced ML unless the AI/ML track is selected.',
+  'No advanced frontend beyond React basics unless Full-Stack is selected.',
+  'Keep applying for jobs while studying — start once Phase 1 is solid.',
+  'The goal is job readiness, not completing every possible technology.'
+];
+
+const PHASES = [
+  {id:1, title:'Phase 1 — Core Foundation', range:'Weeks 1–5', from:1, to:5, note:'Mandatory for essentially all 200 companies: DSA, Java, OOP, SQL/DBMS, Git.'},
+  {id:2, title:'Phase 2 — Backend + Web Fundamentals', range:'Weeks 6–10', from:6, to:10, note:'Turns "Required: Java, DSA, OOP, DBMS" into "Preferred: REST APIs, Spring Boot, microservices".'},
+  {id:3, title:'Phase 3 — Cloud/DevOps + Distributed Systems', range:'Weeks 11–15', from:11, to:15, note:'Your specialization lane — extends existing Linux/AWS/Docker strength into K8s, CI/CD, Terraform.'},
+  {id:4, title:'Phase 4 — Interview-Ready DSA + System Design', range:'Weeks 16–18', from:16, to:18, note:'Mixed timed DSA at interview intensity, plus LLD and mock interviews.'},
+  {id:5, title:'Phase 5 — Optional Secondary Track', range:'Weeks 19–22', from:19, to:22, note:'Optional. Pick ONE track that complements the Cloud/DevOps specialization.', track:true}
+];
+
+const TRACKS = {
+  fullstack: {name:'Full-Stack', blurb:'Largest single opening category in the research.', weeks:[
+    {title:'React fundamentals I', topics:['Components','JSX','Props/state'], goal:'Get productive in React basics.', practice:'Build 2 small components daily.', items:['Small React app running locally'], primary:{topic:'React', task:'Components, props, state', min:105, days:[1,2,3,4,5]}},
+    {title:'React fundamentals II', topics:['Hooks','Effects','Routing'], goal:'Hooks and data fetching.', practice:'Rebuild one screen from scratch.', items:['Multi-page React app with routing'], primary:{topic:'React', task:'Hooks, effects, routing', min:105, days:[1,2,3,4,5]}},
+    {title:'React + Spring Boot integration', topics:['Fetch/Axios','CORS','Auth basics'], goal:'Wire the frontend to your existing API.', practice:'Consume every endpoint you built.', items:['Frontend talking to your Spring Boot API'], primary:{topic:'Full-Stack', task:'Connect React to the Spring Boot API', min:120, days:[1,2,3,4,5]}},
+    {title:'Deploy the full stack', topics:['Docker Compose','CI/CD','AWS'], goal:'Ship frontend + backend + DB together.', practice:'Redeploy from a clean clone.', items:['Deployed full-stack app','README with architecture diagram'], primary:{topic:'Deploy', task:'Full-stack deploy via Docker + CI/CD + AWS', min:120, days:[1,2,3,4,5]}}
+  ]},
+  aiml: {name:'AI/ML/Data', blurb:'Matches the AI/ML-startup segment and your mentorship background.', weeks:[
+    {title:'Python for data', topics:['Pandas','NumPy'], goal:'Comfortable manipulating real datasets.', practice:'One dataset cleaned per day.', items:['Notebook of cleaning/aggregation exercises'], primary:{topic:'Python', task:'Pandas / NumPy on a real dataset', min:105, days:[1,2,3,4,5]}},
+    {title:'SQL for analytics', topics:['Window functions','Aggregation'], goal:'Analytical SQL beyond CRUD.', practice:'10 analytics queries/day.', items:['Analytics query set'], primary:{topic:'SQL', task:'Analytical SQL practice', min:105, days:[1,2,3,4,5]}},
+    {title:'Basic ML with scikit-learn', topics:['Classification','Regression'], goal:'Train and evaluate simple models.', practice:'One model trained + evaluated per session.', items:['Trained model with evaluation writeup'], primary:{topic:'ML', task:'scikit-learn classification / regression', min:105, days:[1,2,3,4,5]}},
+    {title:'End-to-end project', topics:['Pipeline','Serving API'], goal:'Data pipeline → model → API.', practice:'Ship it containerized.', items:['Prediction API in Docker','README'], primary:{topic:'ML Project', task:'Pipeline → model → serving API', min:120, days:[1,2,3,4,5]}}
+  ]},
+  qa: {name:'QA/SDET', blurb:'Lower DSA gatekeeping if interview rounds are the bottleneck.', weeks:[
+    {title:'Testing fundamentals', topics:['Manual testing','Test design'], goal:'Understand test strategy and cases.', practice:'Write test cases for your own API.', items:['Test plan for the backend project'], primary:{topic:'QA', task:'Manual testing + test case design', min:105, days:[1,2,3,4,5]}},
+    {title:'Automation basics', topics:['Selenium','Playwright'], goal:'Automate a browser flow.', practice:'One automated flow per day.', items:['Automated UI test suite'], primary:{topic:'Automation', task:'Selenium / Playwright basics', min:105, days:[1,2,3,4,5]}},
+    {title:'API testing', topics:['Postman','REST Assured'], goal:'Test your Spring Boot API properly.', practice:'Cover every endpoint.', items:['API test collection'], primary:{topic:'API Testing', task:'Postman / REST Assured coverage', min:105, days:[1,2,3,4,5]}},
+    {title:'CI integration', topics:['GitHub Actions','Reporting'], goal:'Run the suite on every push.', practice:'Break the build deliberately, then fix it.', items:['Tests running in CI with reports'], primary:{topic:'CI', task:'Wire the test suite into CI/CD', min:105, days:[1,2,3,4,5]}}
+  ]},
+  security: {name:'Cybersecurity', blurb:'Tightest synergy with your Linux/networking strength.', weeks:[
+    {title:'Network security fundamentals', topics:['TLS','Firewalls','Hardening'], goal:'Security layer on top of existing networking.', practice:'Harden one homelab service per session.', items:['Hardening notes for the homelab'], primary:{topic:'Security', task:'Network security fundamentals', min:105, days:[1,2,3,4,5]}},
+    {title:'OWASP Top 10', topics:['Injection','Auth','XSS'], goal:'Recognise and fix common web vulns.', practice:'Find one class of vuln per day in sample apps.', items:['OWASP findings writeup'], primary:{topic:'Security', task:'OWASP Top 10 hands-on', min:105, days:[1,2,3,4,5]}},
+    {title:'SOC tooling awareness', topics:['Log analysis','SIEM concepts'], goal:'Speak the analyst language.', practice:'Analyse real logs from your servers.', items:['Log analysis exercise'], primary:{topic:'Security', task:'Log analysis / SIEM concepts', min:105, days:[1,2,3,4,5]}},
+    {title:'Secure your own stack', topics:['Image scanning','K8s security'], goal:'Apply scanning to Docker/K8s projects.', practice:'Fix every high-severity finding.', items:['Scanned + hardened project with report'], primary:{topic:'Security', task:'Scan and harden Docker/K8s projects', min:105, days:[1,2,3,4,5]}}
+  ]}
+};
+
+// Weeks 1-18 from the curriculum. dsa: recurring daily practice. primary/second: study blocks.
+const WEEKS = [
+  {n:1, phase:1, title:'DSA — Part 1', goal:'Arrays, strings and hashing patterns cold.', topics:['Arrays','Strings','Hashing'], practice:'3–4 LeetCode Easy→Medium per day, pattern-focused, not volume.',
+   dsa:{n:'3–4', min:90, note:'Arrays / strings / hashing'}, primary:{topic:'DSA Theory', task:'Study the pattern before solving — complexity analysis', min:60, days:[1,3,5]},
+   items:['Pattern notes for arrays, strings, hashing','~20 problems logged in the DSA tracker']},
+  {n:2, phase:1, title:'DSA Part 1 + Java Fundamentals', goal:'Finish pointer patterns; start Java.', topics:['Two Pointers','Sliding Window','Recursion','Java syntax'], practice:'3–4 problems/day; daily Java syntax drills.',
+   dsa:{n:'3–4', min:90, note:'Two pointers / sliding window / recursion'}, primary:{topic:'Java', task:'Syntax, types, control flow, methods', min:90, days:[1,2,4,5]},
+   items:['Sliding-window + two-pointer notes','First Java programs committed to a repo']},
+  {n:3, phase:1, title:'Java Fundamentals + DSA Part 2', goal:'OOP through Java; linear structures.', topics:['OOP in Java','Collections','Exceptions','Linked Lists','Stacks','Queues'], practice:'3–4 problems/day on linked lists, stacks, queues.',
+   dsa:{n:'3–4', min:90, note:'Linked lists / stacks / queues'}, primary:{topic:'Java', task:'OOP: classes, inheritance, interfaces, polymorphism, abstraction', min:90, days:[1,2,4,5]}, second:{topic:'Java', task:'Collections framework + exception handling', min:60, days:[3,6]},
+   items:['OOP examples repo (inheritance, interfaces, polymorphism)','Collections framework cheat sheet']},
+  {n:4, phase:1, title:'DSA Part 2 + SQL start', goal:'Trees and basic graphs; open SQL.', topics:['Trees','BST','Graphs','BFS','DFS','SQL SELECT/JOIN'], practice:'3–4 problems/day, start timing yourself.',
+   dsa:{n:'3–4', min:90, note:'Trees / BST / BFS / DFS — timed'}, primary:{topic:'SQL', task:'SELECT, all JOIN types, GROUP BY / HAVING', min:75, days:[1,3,5]}, second:{topic:'Java', task:'Keep Java warm — small exercises', min:45, days:[2,4]},
+   items:['Tree + graph traversal templates','15 SQL problems solved']},
+  {n:5, phase:1, title:'SQL & DBMS + Git/GitHub', goal:'Multi-table SQL comfort and interview-ready Git.', topics:['Subqueries','Indexing','Window functions','Normalization','ACID','Git workflow'], practice:'30–40 SQL problems total until multi-table JOINs are comfortable.',
+   dsa:{n:'3', min:75, note:'Mixed review of Phase 1 patterns'}, primary:{topic:'SQL', task:'Subqueries, indexing basics, basic window functions', min:75, days:[1,2,4]}, second:{topic:'DBMS', task:'Normalization, ACID, transactions, keys/constraints', min:60, days:[3,5]}, project:{topic:'Git', task:'Clean commit history + READMEs on existing repos', min:75, days:[6]},
+   items:['30–40 SQL problems solved','DBMS theory notes (normalization, ACID)','Existing repos cleaned: history + READMEs']},
+  {n:6, phase:2, title:'REST API design + Spring Boot basics', goal:'HTTP fundamentals and the Spring Boot skeleton.', topics:['HTTP methods','Status codes','Controllers','DI'], practice:'2 DSA problems/day to keep the pattern memory alive.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'Spring Boot', task:'Controllers, services, repositories, dependency injection', min:105, days:[1,2,3,4,5]},
+   items:['Hello-world Spring Boot service running','REST design notes (methods, status codes, headers)']},
+  {n:7, phase:2, title:'Spring Boot — CRUD REST API', goal:'A full CRUD API in memory.', topics:['REST controllers','Validation','Error handling'], practice:'2 DSA problems/day.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'Spring Boot', task:'Build the CRUD REST API end to end', min:105, days:[1,2,3,4,5]}, project:{topic:'Project', task:'Commit daily; write the README as you go', min:45, days:[6]},
+   items:['Working CRUD REST API (in-memory)','README with endpoint table']},
+  {n:8, phase:2, title:'SQL + Spring Boot integration', goal:'Real database behind the API.', topics:['PostgreSQL/MySQL','JPA/Hibernate','Entities','Migrations'], practice:'2 DSA problems/day.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'Spring Boot', task:'JPA/Hibernate against PostgreSQL or MySQL', min:105, days:[1,2,3,4,5]}, project:{topic:'Project', task:'Seed data, test the endpoints, document the schema', min:60, days:[6]},
+   items:['CRUD REST API backed by a real database','Schema documented in the README','First backend portfolio project on GitHub']},
+  {n:9, phase:2, title:'DSA — Part 3 (Medium-heavy)', goal:'DP, heaps and advanced graphs at Medium level.', topics:['Dynamic Programming','Heaps/Priority Queues','Dijkstra','Union-Find'], practice:'3–4 Medium problems/day, timed.',
+   dsa:{n:'3–4', min:120, note:'DP / heaps / Dijkstra / Union-Find — Medium, timed'}, primary:{topic:'DSA Theory', task:'Study the pattern, then implement it from scratch', min:60, days:[2,4,6]},
+   items:['DP pattern notes (knapsack, subsequences)','Dijkstra + Union-Find implemented from memory']},
+  {n:10, phase:2, title:'System Design — Basics', goal:'Be conversational about simple systems.', topics:['Client-server','Load balancing','Caching','Replication/Sharding','CAP'], practice:'2 DSA problems/day; one design sketched per session.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'System Design', task:'Load balancing, caching, DB scaling, CAP basics', min:90, days:[1,2,4,5]}, second:{topic:'System Design', task:'Whiteboard a system: URL shortener, then rate limiter', min:75, days:[3,6]},
+   items:['URL shortener design writeup','Rate limiter design writeup']},
+  {n:11, phase:3, title:'Kubernetes fundamentals', goal:'Run an existing Dockerized app on k3s/minikube.', topics:['Pods','Deployments','Services','ConfigMaps/Secrets'], practice:'2 DSA problems/day; deploy something every session.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'Kubernetes', task:'Pods, deployments, services, ConfigMaps/Secrets', min:105, days:[1,2,3,5]}, project:{topic:'Project', task:'Deploy Nextcloud onto k3s/minikube on the homelab', min:90, days:[4,6]},
+   items:['Existing Dockerized project running on k3s/minikube','Manifests committed to the repo']},
+  {n:12, phase:3, title:'CI/CD with GitHub Actions', goal:'build → test → containerize → deploy.', topics:['GitHub Actions','Pipelines','Container registry'], practice:'2 DSA problems/day.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'CI/CD', task:'GitHub Actions pipeline: build, test, containerize', min:105, days:[1,2,3,5]}, project:{topic:'Project', task:'Apply the pipeline to the Spring Boot API', min:90, days:[4,6]},
+   items:['Green CI pipeline on the Spring Boot project','Container image published automatically']},
+  {n:13, phase:3, title:'AWS certification push', goal:'Convert existing AWS knowledge into a credential.', topics:['EC2','S3','IAM','VPC','Billing'], practice:'Practice exams daily; 2 DSA problems/day.',
+   dsa:{n:'2', min:45, note:'Light maintenance set'}, primary:{topic:'AWS', task:'Cloud Practitioner prep — practice exams and gaps', min:120, days:[1,2,3,4,5]}, project:{topic:'AWS', task:'Sit the exam if the practice scores hold', min:90, days:[6]},
+   items:['Practice exams passing consistently','AWS Cloud Practitioner exam sat']},
+  {n:14, phase:3, title:'Microservices + Distributed Systems basics', goal:'Service-to-service comms and monitoring.', topics:['Service communication','Kafka basics','Prometheus'], practice:'2 DSA problems/day.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'Microservices', task:'Service-to-service communication + Kafka basics', min:105, days:[1,2,3,5]}, project:{topic:'Monitoring', task:'Prometheus into the existing Grafana/InfluxDB setup', min:90, days:[4,6]},
+   items:['Kafka producer/consumer demo','Prometheus metrics visible in Grafana']},
+  {n:15, phase:3, title:'Terraform (IaC)', goal:'Existing AWS VPC rebuilt as code.', topics:['Terraform','State','Modules'], practice:'2 DSA problems/day.',
+   dsa:{n:'2', min:60, note:'Maintenance set — mixed patterns'}, primary:{topic:'Terraform', task:'Rebuild the AWS VPC project as Terraform code', min:105, days:[1,2,3,5]}, project:{topic:'Project', task:'Assemble the Docker + K8s + CI/CD + Terraform + AWS narrative repo', min:105, days:[4,6]},
+   items:['VPC provisioned from Terraform','Portfolio repo telling one coherent infra story','README with architecture diagram']},
+  {n:16, phase:4, title:'DSA — Interview intensity I', goal:'Mixed timed practice across every pattern.', topics:['Mixed patterns','Timed practice'], practice:'5–6 problems/day, timed under interview conditions.',
+   dsa:{n:'5–6', min:150, note:'Mixed, timed — arrays through graphs and DP'}, primary:{topic:'Revision', task:'Rework problems you failed, from scratch', min:60, days:[2,4,6]},
+   items:['30+ timed problems logged this week','Failure list with the reason for each miss']},
+  {n:17, phase:4, title:'DSA — Interview intensity II', goal:'Company-tagged practice.', topics:['Company-tagged problems','Timed practice'], practice:'5–6 problems/day; target companies from the research (Juspay, Razorpay, Flipkart, Groww).',
+   dsa:{n:'5–6', min:150, note:'Company-tagged sets, timed'}, primary:{topic:'Revision', task:'Explain your solutions out loud, complexity first', min:60, days:[2,4,6]},
+   items:['Company-tagged sets completed','Solutions explained out loud, timed']},
+  {n:18, phase:4, title:'LLD + mock interviews', goal:'Design patterns applied, and three mocks done.', topics:['Singleton','Factory','Observer','Strategy','LLD problems'], practice:'3 DSA problems/day; 2–3 mock interviews this week.',
+   dsa:{n:'3', min:90, note:'Maintenance — keep the timing sharp'}, primary:{topic:'LLD', task:'Design patterns + apply OOP to a small design problem', min:105, days:[1,2,4]}, second:{topic:'Mock', task:'Mock interview: DSA + project deep-dive + basic system design', min:90, days:[3,5,6]},
+   items:['Parking lot / rate limiter LLD written up','2–3 mock interviews logged with action items']}
+];
+
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const FULL_DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const JOB_STATUSES = ['Saved','Applied','OA','Interview','Offer','Rejected','Withdrawn'];
+const JOB_COLORS = {Saved:'#8b939e', Applied:'#57d3c4', OA:'#e2b25f', Interview:'#e2b25f', Offer:'#7fca8a', Rejected:'#e2726a', Withdrawn:'#5e6672'};
+const REV_INTERVALS = [1,3,7,14,30];
+
+const STRONG = ['Linux','AWS fundamentals','Docker','Bash','Networking'];
+const GAPS = ['DSA','Java','SQL/DBMS','OOP','REST APIs','System Design','Kubernetes','CI/CD','Terraform','Kafka','LLD'];
+const READY_AREAS = ['DSA','Java','OOP','SQL','DBMS','REST APIs','Spring Boot','System Design','LLD','Git','Projects','Cloud/DevOps'];
+
+const CHECKLIST_DEFS = [
+  {id:'resume', title:'Resume', items:['Java added','Spring Boot added','SQL/DBMS','Cloud/DevOps','Projects','GitHub cleaned','README completed','Resume tailored']},
+  {id:'github', title:'GitHub', items:['Profile cleaned','Pinned projects','READMEs','Commit history','Documentation']}
+];
+
+const KEY = 'csprepos.v1';
+const todayISO = () => new Date().toISOString().slice(0,10);
+const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+const hrs = m => (Math.round((m/60)*10)/10) + 'h';
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const skills = {};
+    STRONG.forEach(n => { skills[n] = {status:'Interview Ready', progress:85, conf:4, last:'—', next:'Keep warm; use it in projects'}; });
+    skills['AWS fundamentals'].next = 'Cloud Practitioner cert (Week 13)';
+    skills['Docker'].next = 'Extend to Kubernetes (Week 11)';
+    GAPS.forEach(n => { skills[n] = {status:'Not Started', progress:0, conf:0, last:'—', next:''}; });
+    const readiness = {}; READY_AREAS.forEach(a => readiness[a] = 0);
+    readiness['Git'] = 55; readiness['Cloud/DevOps'] = 60;
+    const checklist = {}; CHECKLIST_DEFS.forEach(g => g.items.forEach(i => checklist[g.id + ':' + i] = false));
+
+    const base = {
+      view:'today', week:1, day:1, track:null, expanded:{},
+      tasks:{}, weekItems:{}, reflections:{},
+      dsa:[], skills, readiness, mocks:[], jobs:[], reviews:{}, revision:[], checklist,
+      project:{name:'Backend Service — evolving portfolio project',
+        desc:'One project carried through the whole curriculum: Java → Spring Boot → REST API → PostgreSQL → JPA/Hibernate → Docker → GitHub Actions → Kubernetes → AWS → Terraform → Monitoring.',
+        stages:{}, github:'', deploy:'', bullets:'', screenshots:'', readme:false, screenshotsDone:false, diagram:false, portfolio:'Idea', tasks:[]}
+    };
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { saved = null; }
+    this.state = saved ? Object.assign(base, saved, {
+      skills: Object.assign(skills, saved.skills || {}),
+      readiness: Object.assign(readiness, saved.readiness || {}),
+      checklist: Object.assign(checklist, saved.checklist || {}),
+      project: Object.assign(base.project, saved.project || {})
+    }) : base;
+    this.state.f = {topic:'Arrays', difficulty:'Easy', minutes:'', title:'', mistake:'', concept:'', company:'', role:'', location:'', url:'', resume:'', mockType:'DSA', mockScore:'', mockNotes:'', projTask:'', independent:true, hints:false};
+  }
+
+  up(patch) {
+    this.setState(patch, () => {
+      const s = Object.assign({}, this.state); delete s.f;
+      try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {}
+    });
+  }
+  setF(patch) { this.setState(s => ({f: Object.assign({}, s.f, patch)})); }
+
+  weekData(n) {
+    if (n <= 18) return WEEKS[n-1];
+    const t = this.state.track;
+    const idx = n - 19;
+    if (!t) return {n, phase:5, title:'Choose a secondary track', goal:'Pick ONE track on the Roadmap to populate weeks 19–22.', topics:['Full-Stack','AI/ML/Data','QA/SDET','Cybersecurity'], practice:'—', items:['Choose one secondary track'], dsa:{n:'2', min:60, note:'Maintenance set'}};
+    const w = TRACKS[t].weeks[idx];
+    return Object.assign({n, phase:5}, w, {title: TRACKS[t].name + ' — ' + w.title, dsa:{n:'2', min:60, note:'Maintenance set — keep patterns alive'}});
+  }
+
+  dayTasks(wn, d) {
+    const W = this.weekData(wn);
+    const out = [];
+    const add = (topic, task, min, priority) => out.push({topic, task, min, priority, key:'w'+wn+'d'+d+'t'+out.length});
+    if (W.dsa) {
+      if (d === 7) add('DSA', 'Light set — 2 problems, ' + W.dsa.note, Math.round(W.dsa.min * 0.5), 'Medium');
+      else add('DSA', W.dsa.n + ' problems — ' + W.dsa.note, W.dsa.min, 'High');
+    }
+    ['primary','second','project'].forEach(k => {
+      const b = W[k];
+      if (b && b.days && b.days.indexOf(d) >= 0) add(b.topic, b.task, b.min, k === 'primary' ? 'High' : 'Medium');
+    });
+    if (d !== 7) add('Revision', 'Review yesterday\u2019s concepts + due spaced-repetition cards', 30, 'Medium');
+    if (d === 7) {
+      add('Revision', 'Weekly consolidation — redo the two things you got wrong', 45, 'Medium');
+      add('Review', 'Weekly review: hours, DSA count, weak topics, next-week adjustment', 45, 'High');
+    }
+    return out;
+  }
+
+  weekTasks(wn) { let all = []; for (let d = 1; d <= 7; d++) all = all.concat(this.dayTasks(wn, d)); return all; }
+
+  taskState(key) { return this.state.tasks[key] || {done:false, actual:'', notes:'', link:''}; }
+  patchTask(key, patch) {
+    this.up({tasks: Object.assign({}, this.state.tasks, {[key]: Object.assign({}, this.taskState(key), patch)})});
+  }
+
+  weekStats(wn) {
+    const ts = this.weekTasks(wn);
+    let planned = 0, doneMin = 0, actual = 0, done = 0;
+    ts.forEach(t => { const st = this.taskState(t.key); planned += t.min; if (st.done) { done++; doneMin += t.min; } actual += Number(st.actual) || 0; });
+    return {planned, doneMin, actual: actual || doneMin, done, total: ts.length,
+      pct: ts.length ? Math.round(done / ts.length * 100) : 0};
+  }
+
+  overallPct() {
+    let done = 0, total = 0;
+    for (let w = 1; w <= 22; w++) { const s = this.weekStats(w); done += s.done; total += s.total; }
+    return total ? Math.round(done / total * 100) : 0;
+  }
+
+  box(done, size) {
+    const s = size || 18;
+    return 'width:' + s + 'px; height:' + s + 'px; flex:0 0 ' + s + 'px; border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:' + (s - 7) + 'px; line-height:1; border:1px solid ' + (done ? C.accent : C.border) + '; background:' + (done ? C.accent : '#0e1114') + '; color:#08221f; margin-top:1px;';
+  }
+  strike(done, size, color) {
+    return 'font-size:' + (size || 13.5) + 'px; color:' + (done ? C.dim : (color || C.text)) + '; text-decoration:' + (done ? 'line-through' : 'none') + ';';
+  }
+
+  dueRevisionItems() {
+    const t = todayISO();
+    return this.state.revision.filter(r => r.due <= t && !r.done);
+  }
+
+  reviseCard(r) {
+    const stage = r.stage;
+    return {
+      concept: r.concept,
+      stageLabel: 'Day ' + REV_INTERVALS[Math.min(stage, REV_INTERVALS.length - 1)] + ' · due ' + r.due,
+      ok: () => this.advanceRev(r.id, true),
+      again: () => this.advanceRev(r.id, false),
+      push: () => this.up({revision: this.state.revision.map(x => x.id === r.id ? Object.assign({}, x, {due: addDays(todayISO(), 3)}) : x)}),
+      drop: () => this.up({revision: this.state.revision.filter(x => x.id !== r.id)})
+    };
+  }
+  advanceRev(id, ok) {
+    this.up({revision: this.state.revision.map(r => {
+      if (r.id !== id) return r;
+      if (!ok) return Object.assign({}, r, {due: addDays(todayISO(), 1)});
+      const stage = r.stage + 1;
+      if (stage >= REV_INTERVALS.length) return Object.assign({}, r, {done:true, stage});
+      return Object.assign({}, r, {stage, due: addDays(todayISO(), REV_INTERVALS[stage] - REV_INTERVALS[stage-1])});
+    })});
+  }
+
+  renderVals() {
+    const st = this.state, f = st.f;
+    const wn = st.week, d = st.day;
+    const W = this.weekData(wn);
+    const phase = PHASES.find(p => wn >= p.from && wn <= p.to);
+    const ws = this.weekStats(wn);
+    const today = this.dayTasks(wn, d).map(t => {
+      const s = this.taskState(t.key);
+      return Object.assign({}, t, {
+        key: t.key, done: s.done, notes: s.notes, link: s.link, actual: s.actual,
+        minLabel: t.min + 'm', toggle: () => this.patchTask(t.key, {done: !s.done}),
+        boxCss: this.box(s.done, 20), boxMark: s.done ? '✓' : '',
+        titleCss: 'margin-top:5px; ' + this.strike(s.done, 13.5),
+        prioCss: 'font-size:10px; font-family:\'IBM Plex Mono\', monospace; letter-spacing:0.04em; text-transform:uppercase; padding:2px 6px; border-radius:4px; border:1px solid ' + (t.priority === 'High' ? '#4a3f2a' : C.border) + '; color:' + (t.priority === 'High' ? C.amber : C.dim) + ';'
+      });
+    });
+    const tPlanned = today.reduce((a, t) => a + t.min, 0);
+    const tDone = today.filter(t => t.done);
+    const tDoneMin = tDone.reduce((a, t) => a + t.min, 0);
+    const nextDay = d === 7 ? 1 : d + 1;
+    const nextWeek = d === 7 ? Math.min(22, wn + 1) : wn;
+    const tomorrow = this.dayTasks(nextWeek, nextDay).map(t => Object.assign({}, t, {minLabel: t.min + 'm'}));
+
+    const nav = [
+      {id:'today', label:'Today'}, {id:'roadmap', label:'Roadmap'}, {id:'planner', label:'Daily Planner'},
+      {id:'dsa', label:'DSA Tracker'}, {id:'skills', label:'Skill Matrix'}, {id:'projects', label:'Projects'},
+      {id:'review', label:'Weekly Review'}, {id:'revision', label:'Revision'}, {id:'interview', label:'Interview Readiness'},
+      {id:'jobs', label:'Jobs'}, {id:'checklist', label:'Resume / GitHub'}
+    ].map(it => {
+      const active = st.view === it.id;
+      let badge = '';
+      if (it.id === 'revision') { const n = this.dueRevisionItems().length; badge = n ? String(n) : ''; }
+      if (it.id === 'today') { const n = today.filter(t => !t.done).length; badge = n ? String(n) : ''; }
+      if (it.id === 'jobs') { const n = st.jobs.length; badge = n ? String(n) : ''; }
+      return {label: it.label, badge, go: () => this.up({view: it.id}),
+        css: 'display:flex; align-items:center; justify-content:space-between; padding:7px 11px; border-radius:7px; cursor:pointer; font-size:13px; ' + (active ? 'background:#171b20; color:' + C.text + '; box-shadow:inset 2px 0 0 ' + C.accent + ';' : 'color:' + C.muted + ';'),
+        badgeCss: badge ? 'font-family:\'IBM Plex Mono\', monospace; font-size:10px; color:' + (active ? C.accent : C.dim) + '; background:#0e1114; border:1px solid ' + C.border + '; border-radius:9px; padding:0 6px;' : 'display:none;'};
+    });
+
+    const titles = {today:'What to do today', roadmap:'22-week roadmap', planner:'Daily planner', dsa:'DSA tracker', skills:'Skill matrix', projects:'Project tracker', review:'Weekly review', revision:'Revision system', interview:'Interview readiness', jobs:'Job applications', checklist:'Resume & GitHub checklist'};
+    const subs = {
+      today: FULL_DAYS[d-1] + ' · Week ' + wn + ' · ' + W.title,
+      roadmap: 'Phase → week → topics → deliverables, straight from the curriculum',
+      planner: 'Week ' + wn + ' broken into days at 15–18h/week',
+      dsa: 'Easy–Medium coverage across all patterns. Hard-tier competitive programming is not needed.',
+      skills: 'Baseline from Phase 0 of the curriculum',
+      projects: 'One project, carried through every phase',
+      review: 'Week ' + wn + ' — planned vs actual',
+      revision: 'Day 1 / 3 / 7 / 14 / 30 spaced repetition',
+      interview: 'Self-rated readiness across the interview surface',
+      jobs: 'Apply while studying — start once Phase 1 is solid',
+      checklist: 'Everything that has to be true before the resume goes out'
+    };
+
+    const overall = this.overallPct();
+    const headerStats = [
+      {label:'Overall', value: overall + '%', sub:'curriculum complete'},
+      {label:'This week', value: hrs(ws.actual), sub:'target 15–18h'},
+      {label:'DSA solved', value: String(st.dsa.length), sub:'problems logged'}
+    ];
+
+    // ---- roadmap ----
+    const phases = PHASES.map(p => {
+      let pDone = 0, pTot = 0;
+      const weeks = [];
+      for (let n = p.from; n <= p.to; n++) {
+        const wd = this.weekData(n);
+        const s = this.weekStats(n);
+        pDone += s.done; pTot += s.total;
+        const items = (wd.items || []).map((text, i) => {
+          const k = 'w' + n + ':' + i;
+          const done = !!st.weekItems[k];
+          return {text, boxCss: this.box(done, 16), boxMark: done ? '✓' : '', textCss: this.strike(done, 12.5, C.soft),
+            toggle: () => this.up({weekItems: Object.assign({}, st.weekItems, {[k]: !done})})};
+        });
+        weeks.push({
+          num:'Week ' + n, title: wd.title, topicsLine: (wd.topics || []).join(' · '),
+          goal: wd.goal, practice: wd.practice, topics: wd.topics || [], items,
+          pct: s.pct, pctLabel: s.pct + '%',
+          expanded: !!st.expanded[n],
+          open: () => this.up({expanded: Object.assign({}, st.expanded, {[n]: !st.expanded[n]})}),
+          jump: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.up({week:n, view:'today'}); },
+          cardCss: 'border:1px solid ' + (n === wn ? '#2c4a47' : C.border) + '; border-radius:10px; background:' + (n === wn ? '#101a19' : C.panel) + ';'
+        });
+      }
+      return {title:p.title, range:p.range, note:p.note, weeks, isTrackPhase: !!p.track,
+        pctLabel: (pTot ? Math.round(pDone / pTot * 100) : 0) + '%'};
+    });
+
+    const trackOptions = Object.keys(TRACKS).map(k => {
+      const sel = st.track === k;
+      return {name: TRACKS[k].name, blurb: TRACKS[k].blurb, pick: () => this.up({track: sel ? null : k}),
+        css: 'border:1px solid ' + (sel ? C.accent : C.border) + '; background:' + (sel ? '#101a19' : '#0e1114') + '; border-radius:9px; padding:11px 13px; cursor:pointer; flex:1; min-width:210px;'};
+    });
+
+    // ---- planner ----
+    const plannerDays = [];
+    for (let i = 1; i <= 7; i++) {
+      const ts = this.dayTasks(wn, i).map(t => {
+        const s = this.taskState(t.key);
+        return Object.assign({}, t, {done:s.done, actual:s.actual, notes:s.notes, minLabel:t.min + 'm',
+          toggle: () => this.patchTask(t.key, {done: !s.done}),
+          boxCss: this.box(s.done, 17), boxMark: s.done ? '✓' : '',
+          titleCss: 'flex:1; min-width:0; ' + this.strike(s.done, 12.5, C.soft)});
+      });
+      const planned = ts.reduce((a, t) => a + t.min, 0);
+      const compMin = ts.filter(t => t.done).reduce((a, t) => a + t.min, 0);
+      const load = planned >= 200 ? 'Heavy' : planned >= 140 ? 'Standard' : 'Light';
+      plannerDays.push({name: FULL_DAYS[i-1], tasks: ts, planned: hrs(planned), completed: hrs(compMin),
+        pctLabel: (planned ? Math.round(compMin / planned * 100) : 0) + '%',
+        rkey: 'w' + wn + 'd' + i, reflection: st.reflections['w' + wn + 'd' + i] || '',
+        tag: load, tagCss: 'font-family:\'IBM Plex Mono\', monospace; font-size:10px; letter-spacing:0.05em; text-transform:uppercase; padding:2px 7px; border-radius:4px; border:1px solid ' + C.border + '; color:' + (load === 'Heavy' ? C.amber : C.dim) + ';',
+        cardCss: 'border:1px solid ' + (i === d ? '#2c4a47' : C.border) + '; border-radius:11px; background:' + C.panel + '; overflow:hidden;'});
+    }
+
+    // ---- dsa ----
+    const counts = {Easy:0, Medium:0, Hard:0};
+    st.dsa.forEach(p => counts[p.difficulty] = (counts[p.difficulty] || 0) + 1);
+    const indep = st.dsa.filter(p => p.independent).length;
+    const dsaStats = [
+      {label:'Total solved', value: String(st.dsa.length), sub:'all time'},
+      {label:'Easy', value: String(counts.Easy), sub:''},
+      {label:'Medium', value: String(counts.Medium), sub:'the target tier'},
+      {label:'Hard', value: String(counts.Hard), sub:'not required'},
+      {label:'Independent', value: (st.dsa.length ? Math.round(indep / st.dsa.length * 100) : 0) + '%', sub:'solved without hints'}
+    ];
+    const topicCount = {}; DSA_TOPICS.forEach(t => topicCount[t] = 0);
+    st.dsa.forEach(p => { if (topicCount[p.topic] !== undefined) topicCount[p.topic]++; });
+    const maxT = Math.max(5, ...Object.values(topicCount));
+    const dsaCoverage = DSA_TOPICS.map(t => ({topic:t, count:topicCount[t], pct: Math.round(topicCount[t] / maxT * 100),
+      color: topicCount[t] === 0 ? '#2a3037' : topicCount[t] < 3 ? C.amber : C.accent}));
+    const dsaLog = st.dsa.slice().reverse().slice(0, 40).map(p => ({
+      title:p.title, sub: p.mistake ? 'Miss: ' + p.mistake : (p.hints ? 'Needed hints' : ''), topic:p.topic, difficulty:p.difficulty, minutes:p.minutes,
+      solvedLabel: p.independent ? 'Solo' : 'With help', solvedColor: p.independent ? C.green : C.amber, revisit: p.revisit,
+      diffCss: 'font-family:\'IBM Plex Mono\', monospace; font-size:10.5px; padding:2px 6px; border-radius:4px; border:1px solid ' + C.border + '; color:' + (p.difficulty === 'Easy' ? C.green : p.difficulty === 'Medium' ? C.amber : C.red) + ';'
+    }));
+    const hardShare = st.dsa.length ? counts.Hard / st.dsa.length : 0;
+    const hardWarn = hardShare > 0.15 && counts.Hard > 2;
+    const hardNote = hardWarn
+      ? String(counts.Hard) + ' of your ' + st.dsa.length + ' problems are Hard. The curriculum caps depth at comfortable Easy–Medium across all patterns — shift back to Medium coverage.'
+      : 'Depth calibration: comfortable Easy–Medium across all patterns, able to explain time/space complexity. Hard-tier competitive programming and advanced graph algorithms are explicitly out of scope for now.';
+    const hardNoteCss = 'border:1px solid ' + (hardWarn ? '#4a3f2a' : C.border) + '; background:' + (hardWarn ? '#16130d' : C.panel) + '; color:' + (hardWarn ? C.amber : C.muted) + '; border-radius:10px; padding:12px 15px; font-size:12.5px;';
+
+    // ---- skills ----
+    const mkSkill = name => {
+      const s = st.skills[name];
+      return {name, status:s.status, progress:s.progress, last:s.last, next:s.next,
+        statusCss: 'background:#0e1114; border:1px solid ' + C.border + '; color:' + (s.status === 'Not Started' ? C.dim : s.status === 'Interview Ready' ? C.green : C.accent) + '; border-radius:6px; padding:5px 7px; font-size:11.5px; width:118px;',
+        conf: [1,2,3,4,5].map(i => ({set: () => this.patchSkill(name, {conf:i}),
+          css: 'width:11px; height:11px; border-radius:3px; cursor:pointer; background:' + (i <= s.conf ? C.accent : '#242a31') + ';'}))};
+    };
+    const skillGroups = [
+      {title:'Strong / existing', note:'Leverage these — no beginner-level re-study.', skills: STRONG.map(mkSkill)},
+      {title:'Major gaps / learning', note:'Front-loaded by frequency in the 200-company research.', skills: GAPS.map(mkSkill)}
+    ];
+
+    // ---- projects ----
+    const pj = st.project;
+    const stageDone = PIPELINE.filter(s => pj.stages[s]).length;
+    const currentStage = PIPELINE.find(s => !pj.stages[s]) || 'Complete';
+    const pipeline = PIPELINE.map((name, i) => {
+      const done = !!pj.stages[name];
+      const isNext = name === currentStage;
+      return {name, toggle: () => this.up({project: Object.assign({}, pj, {stages: Object.assign({}, pj.stages, {[name]: !done})})}),
+        dotCss: 'width:' + (isNext ? 15 : 12) + 'px; height:' + (isNext ? 15 : 12) + 'px; border-radius:50%; flex:0 0 auto; background:' + (done ? C.accent : isNext ? '#0e1114' : '#1c2127') + '; border:2px solid ' + (done ? C.accent : isNext ? C.amber : '#2a3037') + ';',
+        lineLeftCss: 'flex:1; height:2px; background:' + (i === 0 ? 'transparent' : done ? C.accent : '#1c2127') + ';',
+        lineRightCss: 'flex:1; height:2px; background:' + (i === PIPELINE.length - 1 ? 'transparent' : (pj.stages[PIPELINE[i+1]] ? C.accent : '#1c2127')) + ';',
+        labelCss: 'font-size:10.5px; text-align:center; line-height:1.3; color:' + (done ? C.soft : isNext ? C.amber : C.dim) + ';'};
+    });
+    const projFields = [
+      {key:'github', label:'GitHub URL', value: pj.github, ph:'github.com/…'},
+      {key:'deploy', label:'Deployment URL', value: pj.deploy, ph:'https://…'},
+      {key:'screenshots', label:'Screenshots', value: pj.screenshots, ph:'link or folder'}
+    ];
+    const flag = (k, label) => ({label, toggle: () => this.up({project: Object.assign({}, pj, {[k]: !pj[k]})}),
+      css: 'border:1px solid ' + (pj[k] ? C.accent : C.border) + '; color:' + (pj[k] ? C.accent : C.muted) + '; background:' + (pj[k] ? '#101a19' : '#0e1114') + '; border-radius:20px; padding:5px 12px; font-size:11.5px; cursor:pointer;'});
+    const docFlags = [flag('readme','README complete'), flag('screenshotsDone','Screenshots added'), flag('diagram','Architecture diagram')];
+    const docMissing = stageDone >= 3 && (!pj.readme || !pj.bullets);
+    const docNudge = docMissing
+      ? 'You are ' + stageDone + ' stages in with documentation lagging. Write the README and the resume bullets now, while the work is fresh.'
+      : 'Document as you build — the README and resume bullets are part of the deliverable, not an afterthought.';
+    const docNudgeCss = 'margin-top:12px; font-size:11.5px; color:' + (docMissing ? C.amber : C.dim) + ';';
+    const portfolioStages = PORTFOLIO_STAGES.map(name => ({name, pick: () => this.up({project: Object.assign({}, pj, {portfolio:name})}),
+      css: 'border:1px solid ' + (pj.portfolio === name ? C.accent : C.border) + '; color:' + (pj.portfolio === name ? C.accent : C.muted) + '; border-radius:6px; padding:5px 11px; font-size:11.5px; cursor:pointer;'}));
+    const projTasks = (pj.tasks || []).map((t, i) => ({text:t.text, boxCss: this.box(t.done, 17), boxMark: t.done ? '✓' : '',
+      textCss: this.strike(t.done, 12.5, C.soft),
+      toggle: () => this.up({project: Object.assign({}, pj, {tasks: pj.tasks.map((x, j) => j === i ? Object.assign({}, x, {done: !x.done}) : x)})})}));
+
+    // ---- weekly review ----
+    const rv = st.reviews[wn] || {};
+    const weekDsa = st.dsa.filter(p => p.week === wn).length;
+    const behindMin = ws.planned - (ws.actual || ws.doneMin);
+    const missed = ws.total - ws.done;
+    const behind = behindMin > 60 && ws.pct < 100;
+    const reviewStats = [
+      {label:'Weekly completion', value: ws.pct + '%', sub: ws.done + ' of ' + ws.total + ' tasks', color: ws.pct >= 80 ? C.green : ws.pct >= 50 ? C.amber : C.red},
+      {label:'Planned hours', value: hrs(ws.planned), sub:'target 15–18h', color: C.text},
+      {label:'Actual hours', value: hrs(ws.actual), sub:'logged', color: C.text},
+      {label:'DSA this week', value: String(weekDsa), sub:'problems logged', color: weekDsa >= 15 ? C.green : C.amber},
+      {label:'Missed tasks', value: String(missed), sub:'not completed', color: missed === 0 ? C.green : C.amber}
+    ];
+    const behindTitle = behind ? 'Behind by ' + hrs(behindMin) + ' / ' + missed + ' tasks' : (ws.pct === 100 ? 'Week complete' : 'On pace');
+    const behindAdvice = behind
+      ? 'Do not compress this into tomorrow. Protect the DSA block — it is the recurring requirement. Drop the lowest-priority secondary block, push one deliverable into next week, and use Saturday as the catch-up slot. If two weeks in a row run short, slide the whole schedule a week rather than skipping content.'
+      : (ws.pct === 100 ? 'Everything for week ' + wn + ' is checked off. Log the review below before moving on.' : 'Keep the daily DSA block intact and finish the remaining ' + missed + ' tasks before the weekly review.');
+    const behindCss = 'border:1px solid ' + (behind ? '#4a3f2a' : C.border) + '; background:' + (behind ? '#16130d' : C.panel) + '; border-radius:10px; padding:14px 16px;';
+    const reviewFields = [
+      {key:'learned', label:'What I learned', value: rv.learned || '', ph:'Concepts that actually landed'},
+      {key:'completed', label:'What I completed', value: rv.completed || '', ph:'Deliverables shipped'},
+      {key:'struggled', label:'What I struggled with', value: rv.struggled || '', ph:'Where you got stuck and why'},
+      {key:'weak', label:'Weak topics', value: rv.weak || '', ph:'Patterns / topics to re-drill'},
+      {key:'revise', label:'What needs revision', value: rv.revise || '', ph:'Schedule these on the Revision page'},
+      {key:'change', label:'What I should change next week', value: rv.change || '', ph:'One concrete adjustment'}
+    ];
+    const from = Math.max(1, wn - 7);
+    const hoursBars = [], dsaBars = [];
+    let maxH = 1, maxD = 1;
+    for (let n = from; n <= wn; n++) { const s = this.weekStats(n); maxH = Math.max(maxH, s.actual); maxD = Math.max(maxD, st.dsa.filter(p => p.week === n).length); }
+    for (let n = from; n <= wn; n++) {
+      const s = this.weekStats(n);
+      const dn = st.dsa.filter(p => p.week === n).length;
+      hoursBars.push({h: Math.max(3, Math.round(s.actual / maxH * 78)), label:'W' + n, color: s.actual >= 900 ? C.accent : C.amber});
+      dsaBars.push({h: Math.max(3, Math.round(dn / maxD * 78)), label:'W' + n, color: C.accent});
+    }
+    const charts = [{title:'Hours logged per week (target 15–18h)', bars: hoursBars}, {title:'DSA problems per week', bars: dsaBars}];
+
+    // ---- revision ----
+    const t0 = todayISO();
+    const active = st.revision.filter(r => !r.done);
+    const revisionBuckets = [
+      {title:'Due today', color:C.amber, items: active.filter(r => r.due <= t0).map(r => this.reviseCard(r))},
+      {title:'Upcoming', color:C.accent, items: active.filter(r => r.due > t0).sort((a,b) => a.due < b.due ? -1 : 1).map(r => this.reviseCard(r))},
+      {title:'Graduated', color:C.green, items: st.revision.filter(r => r.done).map(r => this.reviseCard(r))}
+    ].map(b => Object.assign(b, {count: b.items.length}));
+
+    // ---- interview ----
+    const readinessAreas = READY_AREAS.map(name => ({name, value: st.readiness[name]}));
+    const readinessScore = Math.round(READY_AREAS.reduce((a, n) => a + st.readiness[n], 0) / READY_AREAS.length);
+    const weakest = readinessAreas.slice().sort((a,b) => a.value - b.value).slice(0, 4);
+
+    // ---- jobs ----
+    const jobColumns = JOB_STATUSES.map(nameS => {
+      const list = st.jobs.filter(j => j.status === nameS);
+      return {name: nameS, color: JOB_COLORS[nameS], count: list.length,
+        jobs: list.map(j => ({company:j.company, role:j.role,
+          meta: [j.location, j.resume, j.applied].filter(Boolean).join(' · '),
+          fwd: () => this.moveJob(j.id, 1), back: () => this.moveJob(j.id, -1),
+          reject: () => this.up({jobs: st.jobs.map(x => x.id === j.id ? Object.assign({}, x, {status:'Rejected'}) : x)})}))};
+    });
+
+    // ---- checklist ----
+    const checklistGroups = CHECKLIST_DEFS.map(g => {
+      const items = g.items.map(text => {
+        const k = g.id + ':' + text;
+        const done = !!st.checklist[k];
+        return {text, boxCss: this.box(done, 17), boxMark: done ? '✓' : '', textCss: this.strike(done, 12.5, C.soft),
+          toggle: () => this.up({checklist: Object.assign({}, st.checklist, {[k]: !done})})};
+      });
+      return {title:g.title, items, countLabel: items.filter(i => i.boxMark).length + '/' + items.length};
+    });
+    checklistGroups.push({title:'Portfolio project stage', countLabel: pj.portfolio,
+      items: PORTFOLIO_STAGES.map(s2 => {
+        const idx = PORTFOLIO_STAGES.indexOf(pj.portfolio);
+        const done = PORTFOLIO_STAGES.indexOf(s2) <= idx;
+        return {text: s2, boxCss: this.box(done, 17), boxMark: done ? '✓' : '', textCss: this.strike(false, 12.5, done ? C.soft : C.dim),
+          toggle: () => this.up({project: Object.assign({}, pj, {portfolio: s2})})};
+      })});
+
+    const weekDots = [];
+    for (let i = 1; i <= 7; i++) {
+      const s2 = this.dayTasks(wn, i);
+      const done = s2.filter(t => this.taskState(t.key).done).length;
+      const full = done === s2.length && s2.length > 0;
+      weekDots.push({label: DAY_NAMES[i-1],
+        css: 'height:26px; border-radius:5px; background:' + (full ? C.accent : done ? '#25493f' : '#1c2127') + '; border:1px solid ' + (i === d ? C.accent : 'transparent') + ';'});
+    }
+    const pace = ws.actual / 60;
+    const paceMsg = pace >= 15 ? 'Weekly target met — ' + hrs(ws.actual) + ' logged.' : 'Need ' + hrs(Math.max(0, 15*60 - ws.actual)) + ' more to hit the 15h floor.';
+    const paceCss = 'margin-top:13px; font-size:11.5px; color:' + (pace >= 15 ? C.green : C.muted) + ';';
+
+    const weekDeliverables = (W.items || []).map((text, i) => {
+      const k = 'w' + wn + ':' + i;
+      const done = !!st.weekItems[k];
+      return {text, boxCss: this.box(done, 17), boxMark: done ? '✓' : '', textCss: this.strike(done, 12.5, C.soft),
+        toggle: () => this.up({weekItems: Object.assign({}, st.weekItems, {[k]: !done})})};
+    });
+
+    return {
+      nav, f,
+      week: String(wn), day: String(d),
+      weekOptions: Array.from({length:22}, (_, i) => ({v: String(i+1), label: 'Week ' + (i+1)})),
+      dayOptions: FULL_DAYS.map((n2, i) => ({v: String(i+1), label: n2})),
+      setWeek: e => this.up({week: Number(e.target.value)}),
+      setDay: e => this.up({day: Number(e.target.value)}),
+      phaseLabel: phase.title, phaseShort: 'Phase ' + phase.id, viewTitle: titles[st.view], viewSub: subs[st.view],
+      overallPctLabel: overall + '%', headerStats,
+      isToday: st.view === 'today', isRoadmap: st.view === 'roadmap', isPlanner: st.view === 'planner',
+      isDsa: st.view === 'dsa', isSkills: st.view === 'skills', isProjects: st.view === 'projects',
+      isReview: st.view === 'review', isRevision: st.view === 'revision', isInterview: st.view === 'interview',
+      isJobs: st.view === 'jobs', isChecklist: st.view === 'checklist',
+      todayHeading: FULL_DAYS[d-1] + ' — ' + W.title,
+      todayTasks: today, todayTotalLabel: hrs(tPlanned), todayDoneLabel: tDone.length + ' of ' + today.length + ' done',
+      plannedLabel: hrs(tPlanned), completedLabel: hrs(tDoneMin), dayPctLabel: (tPlanned ? Math.round(tDoneMin / tPlanned * 100) : 0) + '%',
+      tomorrowTasks: tomorrow, tomorrowHeading: FULL_DAYS[nextDay-1] + (nextWeek !== wn ? ', week ' + nextWeek : ''),
+      tomorrowTotalLabel: hrs(tomorrow.reduce((a, t) => a + t.min, 0)),
+      weekHoursLabel: hrs(ws.actual), weekPlannedLabel: hrs(ws.planned), weekBarPct: Math.min(100, Math.round(ws.actual / (18*60) * 100)),
+      weekDots, paceMsg, paceCss, weekTitle: W.title, weekDeliverables,
+      dueRevision: this.dueRevisionItems().map(r => this.reviseCard(r)),
+      noRevision: this.dueRevisionItems().length === 0,
+      dueCountLabel: this.dueRevisionItems().length + ' due',
+      phases, trackOptions, rules: RULES.map((text, i) => ({n: String(i+1) + '.', text})),
+      plannerDays,
+      setTaskNote: e => this.patchTask(e.target.dataset.k, {notes: e.target.value}),
+      setTaskLink: e => this.patchTask(e.target.dataset.k, {link: e.target.value}),
+      setTaskActual: e => this.patchTask(e.target.dataset.k, {actual: e.target.value}),
+      setReflection: e => this.up({reflections: Object.assign({}, st.reflections, {[e.target.dataset.k]: e.target.value})}),
+      dsaTopics: DSA_TOPICS, statuses: STATUSES,
+      dsaStats, dsaCoverage, dsaLog, noDsa: st.dsa.length === 0, hardNote, hardNoteCss,
+      setDsaField: e => this.setF({[e.target.dataset.f]: e.target.value}),
+      toggleIndependent: () => this.setF({independent: !f.independent}),
+      toggleHints: () => this.setF({hints: !f.hints}),
+      indCss: 'border:1px solid ' + (f.independent ? C.accent : C.border) + '; color:' + (f.independent ? C.accent : C.muted) + '; border-radius:6px; padding:8px 12px; font-size:12px; cursor:pointer;',
+      hintCss: 'border:1px solid ' + (f.hints ? C.amber : C.border) + '; color:' + (f.hints ? C.amber : C.muted) + '; border-radius:6px; padding:8px 12px; font-size:12px; cursor:pointer;',
+      addDsa: () => this.addDsa(),
+      skillGroups,
+      setSkillStatus: e => this.patchSkill(e.target.dataset.k, {status: e.target.value, last: todayISO()}),
+      setSkillProgress: e => this.patchSkill(e.target.dataset.k, {progress: Number(e.target.value), last: todayISO()}),
+      setSkillNext: e => this.patchSkill(e.target.dataset.k, {next: e.target.value}),
+      proj: {name: pj.name, desc: pj.desc, bullets: pj.bullets,
+        pctLabel: Math.round(stageDone / PIPELINE.length * 100) + '%',
+        stageLabel: currentStage === 'Complete' ? 'All stages done' : 'Next: ' + currentStage},
+      pipeline, projFields, docFlags, docNudge, docNudgeCss, portfolioStages, projTasks,
+      setProjField: e => this.up({project: Object.assign({}, pj, {[e.target.dataset.f]: e.target.value})}),
+      setProjBullets: e => this.up({project: Object.assign({}, pj, {bullets: e.target.value})}),
+      addProjTask: () => { if (!f.projTask) return; this.up({project: Object.assign({}, pj, {tasks: (pj.tasks || []).concat([{text: f.projTask, done:false}])})}); this.setF({projTask:''}); },
+      reviewStats, behindTitle, behindAdvice, behindCss, reviewFields, charts,
+      setReviewField: e => this.up({reviews: Object.assign({}, st.reviews, {[wn]: Object.assign({}, rv, {[e.target.dataset.f]: e.target.value})})}),
+      revisionBuckets, addRevision: () => this.addRevision(),
+      readinessAreas, readinessScore, weakest: weakest.map(w => ({name: w.name, value: String(w.value)})),
+      setReadiness: e => this.up({readiness: Object.assign({}, st.readiness, {[e.target.dataset.k]: Number(e.target.value)})}),
+      mocks: st.mocks.slice().reverse(), addMock: () => this.addMock(),
+      jobColumns, addJob: () => this.addJob(),
+      checklistGroups
+    };
+  }
+
+  patchSkill(name, patch) {
+    this.up({skills: Object.assign({}, this.state.skills, {[name]: Object.assign({}, this.state.skills[name], patch)})});
+  }
+  addDsa() {
+    const f = this.state.f;
+    if (!f.title) return;
+    const rec = {id: Date.now(), title: f.title, topic: f.topic, difficulty: f.difficulty,
+      minutes: Number(f.minutes) || 0, date: todayISO(), week: this.state.week,
+      independent: f.independent, hints: f.hints, mistake: f.mistake,
+      revisit: addDays(todayISO(), f.independent && !f.hints ? 7 : 3)};
+    this.up({dsa: this.state.dsa.concat([rec])});
+    this.setF({title:'', minutes:'', mistake:''});
+  }
+  addRevision() {
+    const f = this.state.f;
+    if (!f.concept) return;
+    this.up({revision: this.state.revision.concat([{id: Date.now(), concept: f.concept, stage: 0, due: addDays(todayISO(), 1), done:false}])});
+    this.setF({concept:''});
+  }
+  addMock() {
+    const f = this.state.f;
+    this.up({mocks: this.state.mocks.concat([{id: Date.now(), date: todayISO(), type: f.mockType, score: f.mockScore || '—', notes: f.mockNotes}])});
+    this.setF({mockScore:'', mockNotes:''});
+  }
+  addJob() {
+    const f = this.state.f;
+    if (!f.company) return;
+    this.up({jobs: this.state.jobs.concat([{id: Date.now(), company: f.company, role: f.role, location: f.location,
+      url: f.url, resume: f.resume, found: todayISO(), applied:'', status:'Saved'}])});
+    this.setF({company:'', role:'', location:'', url:''});
+  }
+  moveJob(id, dir) {
+    this.up({jobs: this.state.jobs.map(j => {
+      if (j.id !== id) return j;
+      const i = Math.max(0, Math.min(JOB_STATUSES.length - 1, JOB_STATUSES.indexOf(j.status) + dir));
+      const status = JOB_STATUSES[i];
+      return Object.assign({}, j, {status, applied: (status === 'Applied' && !j.applied) ? todayISO() : j.applied});
+    })});
+  }
+}
+
+</script>
+</body>
+</html>
