@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=CS Prep OS Dashboard
+Comment=Open the CS Prep OS dashboard in your browser
+Exec=xdg-open "/home/raman/job-prep-dashboard/CS Prep OS.dc.html"
+Icon=text-html
+Terminal=false
+Categories=Utility;

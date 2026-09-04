@@ -7,6 +7,18 @@ A personal 22-week CS job-preparation dashboard built with Claude Design. Tracks
 
 ---
 
+## Screenshots
+
+| Today | Roadmap |
+|---|---|
+| ![Today view](screenshots/dashboard-today.png) | ![22-week roadmap](screenshots/dashboard-roadmap.png) |
+
+| DSA Tracker | Skill Matrix |
+|---|---|
+| ![DSA tracker](screenshots/dashboard-dsa-tracker.png) | ![Skill matrix](screenshots/dashboard-skill-matrix.png) |
+
+---
+
 ## What it tracks
 
 | Section | What it does |
@@ -37,13 +49,39 @@ A personal 22-week CS job-preparation dashboard built with Claude Design. Tracks
 
 ## Running locally
 
+### Windows
+
 **Double-click `Start Dashboard.bat`** — it starts a local server and opens the dashboard in your browser automatically.
 
 Requires **Python** (recommended) or **Node.js**:
 - Python: [python.org/downloads](https://www.python.org/downloads/) — check "Add to PATH"
 - Node.js: [nodejs.org](https://nodejs.org/)
 
-The dashboard runs at `http://localhost:8765`. All data is saved to `localStorage` — nothing is lost between sessions.
+The dashboard runs at `http://localhost:8765`.
+
+### Linux
+
+**From a terminal:**
+
+```bash
+./start-dashboard.sh
+```
+
+This opens `CS Prep OS.dc.html` directly in your default browser.
+
+**From a file manager (GNOME/Nautilus and similar):** double-clicking `.sh` files usually won't run them — most file managers open scripts in a text editor instead, or block execution outright for security. Instead, install the included app launcher so the dashboard shows up like any other app:
+
+```bash
+mkdir -p ~/.local/share/applications
+cp "Start Dashboard.desktop" ~/.local/share/applications/cs-prep-os.desktop
+update-desktop-database ~/.local/share/applications
+```
+
+Then open your app launcher (Activities/search, rofi, wofi, etc.) and search for **"CS Prep OS Dashboard"**.
+
+> Note: `Start Dashboard.desktop`'s `Exec` line uses an absolute path. If you clone this repo somewhere other than its current location, edit that line to match your local path before installing the launcher.
+
+All data is saved to `localStorage` — nothing is lost between sessions.
 
 ---
 
@@ -54,8 +92,9 @@ CS Prep OS.dc.html      — main dashboard (all logic + data)
 support.js              — Claude Design runtime (React renderer)
 index.html              — redirect shim for clean URL
 Start Dashboard.bat     — one-click launcher for Windows
-uploads/
-  Raman_Job_Oriented_CS_Curriculum.md  — source curriculum document
+start-dashboard.sh      — one-click launcher for Linux (terminal)
+Start Dashboard.desktop — app launcher for Linux (file manager / app search)
+screenshots/            — dashboard screenshots used in this README
 ```
 
 ---
