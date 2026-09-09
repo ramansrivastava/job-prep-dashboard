@@ -1,4 +1,4 @@
-# CS Prep OS
+# CS Prep 
 
 A personal 22-week CS job-preparation dashboard built with Claude Design. Tracks everything in one place — daily tasks, DSA problems, skills, projects, and job applications — tailored for a Cloud/DevOps-background engineer targeting backend/SDE roles.
 
