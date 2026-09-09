@@ -372,11 +372,16 @@
               <div onClick="{{ toggleIndependent }}" style="{{ indCss }}">Solved independently</div>
               <div onClick="{{ toggleHints }}" style="{{ hintCss }}">Needed hints</div>
               <input value="{{ f.mistake }}" data-f="mistake" onChange="{{ setDsaField }}" placeholder="Mistake / reason" style="flex:2; min-width:190px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
-              <div onClick="{{ addDsa }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">Add</div>
+              <div onClick="{{ addDsa }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">{{ dsaBtnLabel }}</div>
+              <sc-if value="{{ isDsaEditing }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ cancelDsaEdit }}" style="border:1px solid #23282f; border-radius:6px; padding:8px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Cancel</div>
+                <div onClick="{{ deleteDsa }}" style="border:1px solid #4a3f2a; border-radius:6px; padding:8px 13px; font-size:12px; color:#e2726a; cursor:pointer;" style-hover="background:#16130d;">Delete</div>
+              </sc-if>
             </div>
           </section>
 
           <div style="display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:20px; align-items:start;">
+            <div style="display:flex; flex-direction:column; gap:20px; min-width:0;">
             <section style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
               <div style="display:flex; padding:10px 16px; border-bottom:1px solid #23282f; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#5e6672;">
                 <span style="flex:1;">Problem</span>
@@ -387,7 +392,7 @@
                 <span style="width:92px;">Revisit</span>
               </div>
               <sc-for list="{{ dsaLog }}" as="p" hint-placeholder-count="4">
-                <div style="display:flex; align-items:center; padding:11px 16px; border-bottom:1px solid #1a1e23; font-size:12.5px;">
+                <div onClick="{{ p.edit }}" style="{{ p.rowCss }}" style-hover="background:#171b20;">
                   <span style="flex:1; min-width:0;">
                     <div style="font-weight:500;">{{ p.title }}</div>
                     <div style="font-size:11px; color:#5e6672;">{{ p.sub }}</div>
@@ -403,6 +408,20 @@
                 <div style="padding:18px; font-size:12.5px; color:#5e6672;">No problems logged yet. The curriculum asks for 3–4/day in Phases 1–2.</div>
               </sc-if>
             </section>
+
+            <section style="border:1px solid #23282f; border-radius:12px; background:#121519; overflow:hidden;">
+              <div style="display:flex; padding:10px 16px; border-bottom:1px solid #23282f; font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:0.07em; text-transform:uppercase; color:#5e6672;">
+                <span style="width:180px;">Tool</span>
+                <span style="flex:1;">You should understand</span>
+              </div>
+              <sc-for list="{{ dsaToolbox }}" as="tb" hint-placeholder-count="8">
+                <div style="display:flex; align-items:center; padding:10px 16px; border-bottom:1px solid #1a1e23; font-size:12.5px;">
+                  <span style="width:180px; font-weight:500;">{{ tb.tool }}</span>
+                  <span style="flex:1; color:#8b939e;">{{ tb.understand }}</span>
+                </div>
+              </sc-for>
+            </section>
+            </div>
 
             <section style="border:1px solid #23282f; border-radius:12px; background:#121519; padding:16px 18px;">
               <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:13px;">Coverage by pattern</div>
@@ -541,14 +560,18 @@
               <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e;">Project tasks</div>
               <div style="display:flex; gap:8px;">
                 <input value="{{ f.projTask }}" data-f="projTask" onChange="{{ setDsaField }}" placeholder="Add a task" style="width:260px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
-                <div onClick="{{ addProjTask }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Add</div>
+                <div onClick="{{ addProjTask }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">{{ projTaskBtnLabel }}</div>
+                <sc-if value="{{ isProjTaskEditing }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ cancelProjTaskEdit }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Cancel</div>
+                  <div onClick="{{ deleteProjTask }}" style="border:1px solid #4a3f2a; border-radius:6px; padding:7px 13px; font-size:12px; color:#e2726a; cursor:pointer;" style-hover="background:#16130d;">Delete</div>
+                </sc-if>
               </div>
             </div>
             <div style="display:flex; flex-direction:column; gap:8px;">
               <sc-for list="{{ projTasks }}" as="t" hint-placeholder-count="3">
                 <div style="display:flex; gap:10px; align-items:center;">
                   <div onClick="{{ t.toggle }}" style="{{ t.boxCss }}">{{ t.boxMark }}</div>
-                  <div style="{{ t.textCss }}">{{ t.text }}</div>
+                  <div onClick="{{ t.edit }}" style="{{ t.textCss }} cursor:pointer;" style-hover="color:#57d3c4;">{{ t.text }}</div>
                 </div>
               </sc-for>
             </div>
@@ -611,7 +634,11 @@
             <div style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.09em; text-transform:uppercase; color:#8b939e; margin-bottom:12px;">Schedule a concept</div>
             <div style="display:flex; gap:9px; flex-wrap:wrap;">
               <input value="{{ f.concept }}" data-f="concept" onChange="{{ setDsaField }}" placeholder="Concept, e.g. Java Collections" style="flex:1; min-width:230px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
-              <div onClick="{{ addRevision }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">Schedule 1 / 3 / 7 / 14 / 30</div>
+              <div onClick="{{ addRevision }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">{{ revisionBtnLabel }}</div>
+              <sc-if value="{{ isRevisionEditing }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ cancelRevisionEdit }}" style="border:1px solid #23282f; border-radius:6px; padding:8px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Cancel</div>
+                <div onClick="{{ deleteRevision }}" style="border:1px solid #4a3f2a; border-radius:6px; padding:8px 13px; font-size:12px; color:#e2726a; cursor:pointer;" style-hover="background:#16130d;">Delete</div>
+              </sc-if>
             </div>
           </section>
 
@@ -625,7 +652,7 @@
                 <sc-for list="{{ b.items }}" as="r" hint-placeholder-count="2">
                   <div style="padding:11px 16px; border-bottom:1px solid #1a1e23;">
                     <div style="display:flex; justify-content:space-between; gap:8px;">
-                      <span style="font-size:12.5px;">{{ r.concept }}</span>
+                      <span onClick="{{ r.edit }}" style="font-size:12.5px; cursor:pointer;" style-hover="color:#57d3c4;">{{ r.concept }}</span>
                       <span style="font-family:'IBM Plex Mono', monospace; font-size:10.5px; color:#5e6672;">{{ r.stageLabel }}</span>
                     </div>
                     <div style="display:flex; gap:7px; margin-top:8px;">
@@ -691,12 +718,16 @@
                 </select>
                 <input value="{{ f.mockScore }}" data-f="mockScore" onChange="{{ setDsaField }}" placeholder="score /10" style="width:96px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
                 <input value="{{ f.mockNotes }}" data-f="mockNotes" onChange="{{ setDsaField }}" placeholder="Questions / mistakes / action items" style="width:320px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:7px 10px; font-size:12.5px;" />
-                <div onClick="{{ addMock }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Log</div>
+                <div onClick="{{ addMock }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">{{ mockBtnLabel }}</div>
+                <sc-if value="{{ isMockEditing }}" hint-placeholder-val="{{ false }}">
+                  <div onClick="{{ cancelMockEdit }}" style="border:1px solid #23282f; border-radius:6px; padding:7px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Cancel</div>
+                  <div onClick="{{ deleteMock }}" style="border:1px solid #4a3f2a; border-radius:6px; padding:7px 13px; font-size:12px; color:#e2726a; cursor:pointer;" style-hover="background:#16130d;">Delete</div>
+                </sc-if>
               </div>
             </div>
             <div style="display:flex; flex-direction:column;">
               <sc-for list="{{ mocks }}" as="m" hint-placeholder-count="2">
-                <div style="display:flex; gap:14px; padding:10px 0; border-top:1px solid #1a1e23; font-size:12.5px;">
+                <div onClick="{{ m.edit }}" style="{{ m.rowCss }}" style-hover="background:#171b20;">
                   <span style="font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#5e6672; width:92px;">{{ m.date }}</span>
                   <span style="width:130px; color:#57d3c4;">{{ m.type }}</span>
                   <span style="width:60px; font-family:'IBM Plex Mono', monospace;">{{ m.score }}</span>
@@ -718,7 +749,11 @@
               <input value="{{ f.location }}" data-f="location" onChange="{{ setDsaField }}" placeholder="Location" style="width:150px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
               <input value="{{ f.url }}" data-f="url" onChange="{{ setDsaField }}" placeholder="Job URL" style="flex:1; min-width:180px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
               <input value="{{ f.resume }}" data-f="resume" onChange="{{ setDsaField }}" placeholder="Resume version" style="width:150px; background:#0e1114; border:1px solid #23282f; color:#e6e9ee; border-radius:6px; padding:8px 10px; font-size:12.5px;" />
-              <div onClick="{{ addJob }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">Save</div>
+              <div onClick="{{ addJob }}" style="background:#57d3c4; color:#08221f; border-radius:6px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer;" style-hover="background:#7ee4d7;">{{ jobBtnLabel }}</div>
+              <sc-if value="{{ isJobEditing }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ cancelJobEdit }}" style="border:1px solid #23282f; border-radius:6px; padding:8px 13px; font-size:12px; color:#8b939e; cursor:pointer;" style-hover="border-color:#57d3c4; color:#57d3c4;">Cancel</div>
+                <div onClick="{{ deleteJob }}" style="border:1px solid #4a3f2a; border-radius:6px; padding:8px 13px; font-size:12px; color:#e2726a; cursor:pointer;" style-hover="background:#16130d;">Delete</div>
+              </sc-if>
             </div>
             <div style="font-size:11.5px; color:#5e6672; margin-top:10px;">The curriculum says to start applying as soon as Phase 1 is solid — don't wait for Phase 5.</div>
           </section>
@@ -732,13 +767,14 @@
                 </div>
                 <div style="display:flex; flex-direction:column; gap:9px; min-height:80px; border:1px dashed #1c2127; border-radius:10px; padding:9px;">
                   <sc-for list="{{ col.jobs }}" as="j" hint-placeholder-count="1">
-                    <div style="border:1px solid #23282f; background:#121519; border-radius:8px; padding:10px 11px;">
+                    <div style="{{ j.cardCss }}">
                       <div style="font-size:12.5px; font-weight:600;">{{ j.company }}</div>
                       <div style="font-size:11.5px; color:#8b939e; margin-top:2px;">{{ j.role }}</div>
                       <div style="font-family:'IBM Plex Mono', monospace; font-size:10px; color:#5e6672; margin-top:5px;">{{ j.meta }}</div>
                       <div style="display:flex; gap:5px; margin-top:9px; align-items:center;">
                         <div onClick="{{ j.back }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#5e6672; cursor:pointer;">‹</div>
                         <div onClick="{{ j.fwd }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#8b939e; cursor:pointer;">›</div>
+                        <div onClick="{{ j.edit }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#8b939e; cursor:pointer;">✎</div>
                         <div onClick="{{ j.reject }}" style="border:1px solid #23282f; border-radius:5px; padding:2px 7px; font-size:11px; color:#e2726a; cursor:pointer;">✕</div>
                       </div>
                     </div>
@@ -785,6 +821,17 @@ const C = {
 };
 
 const DSA_TOPICS = ['Arrays','Strings','Hashing','Two Pointers','Sliding Window','Recursion','Linked Lists','Stacks','Queues','Trees','BST','Graphs','BFS','DFS','Heaps/Priority Queues','Dynamic Programming','Dijkstra','Union-Find'];
+
+const DSA_TOOLBOX = [
+  {tool:'Array/List', understand:'indexing, traversal, insert/delete costs'},
+  {tool:'Hash Map', understand:'key → value, O(1) average lookup'},
+  {tool:'Set', understand:'membership / uniqueness'},
+  {tool:'Stack', understand:'LIFO'},
+  {tool:'Queue', understand:'FIFO'},
+  {tool:'Two pointers', understand:'moving through an array efficiently'},
+  {tool:'Binary search', understand:'reducing search space'},
+  {tool:'Sorting', understand:'when/why it helps'}
+];
 
 const STATUSES = ['Not Started','Learning','Practicing','Project Applied','Interview Ready'];
 
@@ -948,7 +995,8 @@ class Component extends DCLogic {
       checklist: Object.assign(checklist, saved.checklist || {}),
       project: Object.assign(base.project, saved.project || {})
     }) : base;
-    this.state.f = {topic:'Arrays', difficulty:'Easy', minutes:'', title:'', mistake:'', concept:'', company:'', role:'', location:'', url:'', resume:'', mockType:'DSA', mockScore:'', mockNotes:'', projTask:'', independent:true, hints:false};
+    this.state.f = {topic:'Arrays', difficulty:'Easy', minutes:'', title:'', mistake:'', concept:'', company:'', role:'', location:'', url:'', resume:'', mockType:'DSA', mockScore:'', mockNotes:'', projTask:'', independent:true, hints:false,
+      dsaEditId:null, mockEditId:null, jobEditId:null, revisionEditId:null, projTaskEditIndex:null};
   }
 
   up(patch) {
@@ -1027,6 +1075,7 @@ class Component extends DCLogic {
     return {
       concept: r.concept,
       stageLabel: 'Day ' + REV_INTERVALS[Math.min(stage, REV_INTERVALS.length - 1)] + ' · due ' + r.due,
+      edit: () => this.editRevision(r.id),
       ok: () => this.advanceRev(r.id, true),
       again: () => this.advanceRev(r.id, false),
       push: () => this.up({revision: this.state.revision.map(x => x.id === r.id ? Object.assign({}, x, {due: addDays(todayISO(), 3)}) : x)}),
@@ -1177,6 +1226,8 @@ class Component extends DCLogic {
     const dsaLog = st.dsa.slice().reverse().slice(0, 40).map(p => ({
       title:p.title, sub: p.mistake ? 'Miss: ' + p.mistake : (p.hints ? 'Needed hints' : ''), topic:p.topic, difficulty:p.difficulty, minutes:p.minutes,
       solvedLabel: p.independent ? 'Solo' : 'With help', solvedColor: p.independent ? C.green : C.amber, revisit: p.revisit,
+      edit: () => this.editDsa(p.id),
+      rowCss: 'display:flex; align-items:center; padding:11px 16px; border-bottom:1px solid #1a1e23; font-size:12.5px; cursor:pointer;' + (f.dsaEditId === p.id ? ' background:#171b20;' : ''),
       diffCss: 'font-family:\'IBM Plex Mono\', monospace; font-size:10.5px; padding:2px 6px; border-radius:4px; border:1px solid ' + C.border + '; color:' + (p.difficulty === 'Easy' ? C.green : p.difficulty === 'Medium' ? C.amber : C.red) + ';'
     }));
     const hardShare = st.dsa.length ? counts.Hard / st.dsa.length : 0;
@@ -1228,8 +1279,9 @@ class Component extends DCLogic {
     const portfolioStages = PORTFOLIO_STAGES.map(name => ({name, pick: () => this.up({project: Object.assign({}, pj, {portfolio:name})}),
       css: 'border:1px solid ' + (pj.portfolio === name ? C.accent : C.border) + '; color:' + (pj.portfolio === name ? C.accent : C.muted) + '; border-radius:6px; padding:5px 11px; font-size:11.5px; cursor:pointer;'}));
     const projTasks = (pj.tasks || []).map((t, i) => ({text:t.text, boxCss: this.box(t.done, 17), boxMark: t.done ? '✓' : '',
-      textCss: this.strike(t.done, 12.5, C.soft),
-      toggle: () => this.up({project: Object.assign({}, pj, {tasks: pj.tasks.map((x, j) => j === i ? Object.assign({}, x, {done: !x.done}) : x)})})}));
+      textCss: this.strike(t.done, 12.5, C.soft) + (f.projTaskEditIndex === i ? ' color:#57d3c4;' : ''),
+      toggle: () => this.up({project: Object.assign({}, pj, {tasks: pj.tasks.map((x, j) => j === i ? Object.assign({}, x, {done: !x.done}) : x)})}),
+      edit: () => this.editProjTask(i)}));
 
     // ---- weekly review ----
     const rv = st.reviews[wn] || {};
@@ -1289,7 +1341,9 @@ class Component extends DCLogic {
       return {name: nameS, color: JOB_COLORS[nameS], count: list.length,
         jobs: list.map(j => ({company:j.company, role:j.role,
           meta: [j.location, j.resume, j.applied].filter(Boolean).join(' · '),
+          cardCss: 'border:1px solid ' + (f.jobEditId === j.id ? C.accent : C.border) + '; background:#121519; border-radius:8px; padding:10px 11px;',
           fwd: () => this.moveJob(j.id, 1), back: () => this.moveJob(j.id, -1),
+          edit: () => this.editJob(j.id),
           reject: () => this.up({jobs: st.jobs.map(x => x.id === j.id ? Object.assign({}, x, {status:'Rejected'}) : x)})}))};
     });
 
@@ -1361,12 +1415,17 @@ class Component extends DCLogic {
       setReflection: e => this.up({reflections: Object.assign({}, st.reflections, {[e.target.dataset.k]: e.target.value})}),
       dsaTopics: DSA_TOPICS, statuses: STATUSES,
       dsaStats, dsaCoverage, dsaLog, noDsa: st.dsa.length === 0, hardNote, hardNoteCss,
+      dsaToolbox: DSA_TOOLBOX,
       setDsaField: e => this.setF({[e.target.dataset.f]: e.target.value}),
       toggleIndependent: () => this.setF({independent: !f.independent}),
       toggleHints: () => this.setF({hints: !f.hints}),
       indCss: 'border:1px solid ' + (f.independent ? C.accent : C.border) + '; color:' + (f.independent ? C.accent : C.muted) + '; border-radius:6px; padding:8px 12px; font-size:12px; cursor:pointer;',
       hintCss: 'border:1px solid ' + (f.hints ? C.amber : C.border) + '; color:' + (f.hints ? C.amber : C.muted) + '; border-radius:6px; padding:8px 12px; font-size:12px; cursor:pointer;',
       addDsa: () => this.addDsa(),
+      isDsaEditing: f.dsaEditId != null,
+      dsaBtnLabel: f.dsaEditId != null ? 'Save changes' : 'Add',
+      cancelDsaEdit: () => this.cancelDsaEdit(),
+      deleteDsa: () => this.deleteDsa(),
       skillGroups,
       setSkillStatus: e => this.patchSkill(e.target.dataset.k, {status: e.target.value, last: todayISO()}),
       setSkillProgress: e => this.patchSkill(e.target.dataset.k, {progress: Number(e.target.value), last: todayISO()}),
@@ -1377,14 +1436,42 @@ class Component extends DCLogic {
       pipeline, projFields, docFlags, docNudge, docNudgeCss, portfolioStages, projTasks,
       setProjField: e => this.up({project: Object.assign({}, pj, {[e.target.dataset.f]: e.target.value})}),
       setProjBullets: e => this.up({project: Object.assign({}, pj, {bullets: e.target.value})}),
-      addProjTask: () => { if (!f.projTask) return; this.up({project: Object.assign({}, pj, {tasks: (pj.tasks || []).concat([{text: f.projTask, done:false}])})}); this.setF({projTask:''}); },
+      addProjTask: () => {
+        if (!f.projTask) return;
+        if (f.projTaskEditIndex != null) {
+          const tasks = (pj.tasks || []).map((x, j) => j === f.projTaskEditIndex ? Object.assign({}, x, {text: f.projTask}) : x);
+          this.up({project: Object.assign({}, pj, {tasks})});
+        } else {
+          this.up({project: Object.assign({}, pj, {tasks: (pj.tasks || []).concat([{text: f.projTask, done:false}])})});
+        }
+        this.setF({projTask:'', projTaskEditIndex:null});
+      },
+      isProjTaskEditing: f.projTaskEditIndex != null,
+      projTaskBtnLabel: f.projTaskEditIndex != null ? 'Save' : 'Add',
+      cancelProjTaskEdit: () => this.cancelProjTaskEdit(),
+      deleteProjTask: () => this.deleteProjTask(),
       reviewStats, behindTitle, behindAdvice, behindCss, reviewFields, charts,
       setReviewField: e => this.up({reviews: Object.assign({}, st.reviews, {[wn]: Object.assign({}, rv, {[e.target.dataset.f]: e.target.value})})}),
       revisionBuckets, addRevision: () => this.addRevision(),
+      isRevisionEditing: f.revisionEditId != null,
+      revisionBtnLabel: f.revisionEditId != null ? 'Save' : 'Schedule 1 / 3 / 7 / 14 / 30',
+      cancelRevisionEdit: () => this.cancelRevisionEdit(),
+      deleteRevision: () => this.deleteRevision(),
       readinessAreas, readinessScore, weakest: weakest.map(w => ({name: w.name, value: String(w.value)})),
       setReadiness: e => this.up({readiness: Object.assign({}, st.readiness, {[e.target.dataset.k]: Number(e.target.value)})}),
-      mocks: st.mocks.slice().reverse(), addMock: () => this.addMock(),
+      mocks: st.mocks.slice().reverse().map(m => Object.assign({}, m,
+        {edit: () => this.editMock(m.id),
+         rowCss: 'display:flex; gap:14px; padding:10px 0; border-top:1px solid #1a1e23; font-size:12.5px; cursor:pointer;' + (f.mockEditId === m.id ? ' background:#171b20;' : '')})),
+      addMock: () => this.addMock(),
+      isMockEditing: f.mockEditId != null,
+      mockBtnLabel: f.mockEditId != null ? 'Save' : 'Log',
+      cancelMockEdit: () => this.cancelMockEdit(),
+      deleteMock: () => this.deleteMock(),
       jobColumns, addJob: () => this.addJob(),
+      isJobEditing: f.jobEditId != null,
+      jobBtnLabel: f.jobEditId != null ? 'Save changes' : 'Save',
+      cancelJobEdit: () => this.cancelJobEdit(),
+      deleteJob: () => this.deleteJob(),
       checklistGroups
     };
   }
@@ -1395,30 +1482,122 @@ class Component extends DCLogic {
   addDsa() {
     const f = this.state.f;
     if (!f.title) return;
-    const rec = {id: Date.now(), title: f.title, topic: f.topic, difficulty: f.difficulty,
-      minutes: Number(f.minutes) || 0, date: todayISO(), week: this.state.week,
-      independent: f.independent, hints: f.hints, mistake: f.mistake,
-      revisit: addDays(todayISO(), f.independent && !f.hints ? 7 : 3)};
-    this.up({dsa: this.state.dsa.concat([rec])});
-    this.setF({title:'', minutes:'', mistake:''});
+    if (f.dsaEditId != null) {
+      this.up({dsa: this.state.dsa.map(p => p.id !== f.dsaEditId ? p : Object.assign({}, p, {
+        title: f.title, topic: f.topic, difficulty: f.difficulty, minutes: Number(f.minutes) || 0,
+        independent: f.independent, hints: f.hints, mistake: f.mistake,
+        revisit: addDays(p.date, f.independent && !f.hints ? 7 : 3)
+      }))});
+    } else {
+      const rec = {id: Date.now(), title: f.title, topic: f.topic, difficulty: f.difficulty,
+        minutes: Number(f.minutes) || 0, date: todayISO(), week: this.state.week,
+        independent: f.independent, hints: f.hints, mistake: f.mistake,
+        revisit: addDays(todayISO(), f.independent && !f.hints ? 7 : 3)};
+      this.up({dsa: this.state.dsa.concat([rec])});
+    }
+    this.setF({title:'', minutes:'', mistake:'', topic:'Arrays', difficulty:'Easy', independent:true, hints:false, dsaEditId:null});
+  }
+  editDsa(id) {
+    const p = this.state.dsa.find(x => x.id === id);
+    if (!p) return;
+    this.setF({dsaEditId:id, title:p.title, topic:p.topic, difficulty:p.difficulty, minutes:String(p.minutes), mistake:p.mistake || '', independent:p.independent, hints:p.hints});
+  }
+  cancelDsaEdit() {
+    this.setF({dsaEditId:null, title:'', minutes:'', mistake:'', topic:'Arrays', difficulty:'Easy', independent:true, hints:false});
+  }
+  deleteDsa() {
+    const f = this.state.f;
+    if (f.dsaEditId == null) return;
+    this.up({dsa: this.state.dsa.filter(p => p.id !== f.dsaEditId)});
+    this.cancelDsaEdit();
   }
   addRevision() {
     const f = this.state.f;
     if (!f.concept) return;
-    this.up({revision: this.state.revision.concat([{id: Date.now(), concept: f.concept, stage: 0, due: addDays(todayISO(), 1), done:false}])});
-    this.setF({concept:''});
+    if (f.revisionEditId != null) {
+      this.up({revision: this.state.revision.map(r => r.id !== f.revisionEditId ? r : Object.assign({}, r, {concept: f.concept}))});
+    } else {
+      this.up({revision: this.state.revision.concat([{id: Date.now(), concept: f.concept, stage: 0, due: addDays(todayISO(), 1), done:false}])});
+    }
+    this.setF({concept:'', revisionEditId:null});
+  }
+  editRevision(id) {
+    const r = this.state.revision.find(x => x.id === id);
+    if (!r) return;
+    this.setF({revisionEditId:id, concept:r.concept});
+  }
+  cancelRevisionEdit() {
+    this.setF({revisionEditId:null, concept:''});
+  }
+  deleteRevision() {
+    const f = this.state.f;
+    if (f.revisionEditId == null) return;
+    this.up({revision: this.state.revision.filter(r => r.id !== f.revisionEditId)});
+    this.cancelRevisionEdit();
   }
   addMock() {
     const f = this.state.f;
-    this.up({mocks: this.state.mocks.concat([{id: Date.now(), date: todayISO(), type: f.mockType, score: f.mockScore || '—', notes: f.mockNotes}])});
-    this.setF({mockScore:'', mockNotes:''});
+    if (f.mockEditId != null) {
+      this.up({mocks: this.state.mocks.map(m => m.id !== f.mockEditId ? m : Object.assign({}, m, {type: f.mockType, score: f.mockScore || '—', notes: f.mockNotes}))});
+    } else {
+      this.up({mocks: this.state.mocks.concat([{id: Date.now(), date: todayISO(), type: f.mockType, score: f.mockScore || '—', notes: f.mockNotes}])});
+    }
+    this.setF({mockScore:'', mockNotes:'', mockEditId:null});
+  }
+  editMock(id) {
+    const m = this.state.mocks.find(x => x.id === id);
+    if (!m) return;
+    this.setF({mockEditId:id, mockType:m.type, mockScore: m.score === '—' ? '' : m.score, mockNotes:m.notes});
+  }
+  cancelMockEdit() {
+    this.setF({mockEditId:null, mockScore:'', mockNotes:''});
+  }
+  deleteMock() {
+    const f = this.state.f;
+    if (f.mockEditId == null) return;
+    this.up({mocks: this.state.mocks.filter(m => m.id !== f.mockEditId)});
+    this.cancelMockEdit();
   }
   addJob() {
     const f = this.state.f;
     if (!f.company) return;
-    this.up({jobs: this.state.jobs.concat([{id: Date.now(), company: f.company, role: f.role, location: f.location,
-      url: f.url, resume: f.resume, found: todayISO(), applied:'', status:'Saved'}])});
-    this.setF({company:'', role:'', location:'', url:''});
+    if (f.jobEditId != null) {
+      this.up({jobs: this.state.jobs.map(j => j.id !== f.jobEditId ? j : Object.assign({}, j, {company: f.company, role: f.role, location: f.location, url: f.url, resume: f.resume}))});
+    } else {
+      this.up({jobs: this.state.jobs.concat([{id: Date.now(), company: f.company, role: f.role, location: f.location,
+        url: f.url, resume: f.resume, found: todayISO(), applied:'', status:'Saved'}])});
+    }
+    this.setF({company:'', role:'', location:'', url:'', resume:'', jobEditId:null});
+  }
+  editJob(id) {
+    const j = this.state.jobs.find(x => x.id === id);
+    if (!j) return;
+    this.setF({jobEditId:id, company:j.company, role:j.role, location:j.location, url:j.url, resume:j.resume});
+  }
+  cancelJobEdit() {
+    this.setF({jobEditId:null, company:'', role:'', location:'', url:'', resume:''});
+  }
+  deleteJob() {
+    const f = this.state.f;
+    if (f.jobEditId == null) return;
+    this.up({jobs: this.state.jobs.filter(j => j.id !== f.jobEditId)});
+    this.cancelJobEdit();
+  }
+  editProjTask(i) {
+    const t = (this.state.project.tasks || [])[i];
+    if (!t) return;
+    this.setF({projTaskEditIndex:i, projTask:t.text});
+  }
+  cancelProjTaskEdit() {
+    this.setF({projTaskEditIndex:null, projTask:''});
+  }
+  deleteProjTask() {
+    const f = this.state.f;
+    if (f.projTaskEditIndex == null) return;
+    const pj = this.state.project;
+    const tasks = (pj.tasks || []).filter((_, j) => j !== f.projTaskEditIndex);
+    this.up({project: Object.assign({}, pj, {tasks})});
+    this.cancelProjTaskEdit();
   }
   moveJob(id, dir) {
     this.up({jobs: this.state.jobs.map(j => {
